@@ -71,26 +71,30 @@ class Character():
 
         if slot == "head":
             old_equip = self.head_armor
-            if old_equip != []:
-                self.armor -= old_equip.armor
-                self.magic_resist -= old_equip.mr
-                self.damage -= old_equip.damage
             self.head_armor = equipment
-        if slot == "body":
+            self.armor += armor
+            self.magic_resist += mr
+            self.damage += dmg
+        elif slot == "body":
             old_equip = self.body_armor
-            if old_equip != []:
-                self.armor -= old_equip.armor
-                self.magic_resist -= old_equip.mr
-                self.damage -= old_equip.damage
             self.body_armor = equipment
-        if slot == "weapon":
+            self.armor += armor
+            self.magic_resist += mr
+            self.damage += dmg
+        elif slot == "weapon":
             old_equip = self.weapon
-            if old_equip != []:
-                self.armor -= old_equip.armor
-                self.magic_resist -= old_equip.mr
-                self.damage -= old_equip.damage
             self.weapon = equipment
-        raise ValueError("Invalid equipment")
+            self.armor += armor
+            self.magic_resist += mr
+            self.damage += dmg
+        else:
+            raise ValueError("Invalid equipment")
+        
+        if old_equip != []:
+            self.armor -= old_equip.armor
+            self.magic_resist -= old_equip.mr
+            self.damage -= old_equip.damage
+            self.invent[old_equip.name] = old_equip
     
     def melee_strike(self, target):
         # Calculating melee damage
@@ -119,7 +123,8 @@ class Archer(Character):
         super().__init__(name, stats)
         for skill in skills:
             self.skills.append(skill)
-        self.inventory = {}
+        self.invent["ARROWS"] = 500
+        
 
     def double_shot(self, target):
         # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage
