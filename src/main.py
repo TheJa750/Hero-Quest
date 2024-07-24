@@ -1,6 +1,8 @@
 import random
 
 def main():
-    pass
+    print("--------------------------------------------------------")
+    print("Welcome to Fantasy Simulator".center(54))
+    print("--------------------------------------------------------")
 
 main()
