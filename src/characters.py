@@ -1,9 +1,6 @@
 import random
 from equipment import *
 
-equipment_type_armor = "armor"
-equipment_type_mr = "magic resist"
-equipment_type_dmg = "damage"
 equipment_slot_head = "head"
 equipment_slot_body = "body"
 equipment_slot_wep = "weapon"
@@ -25,15 +22,20 @@ class Character():
         self.mana = 25 * self.__wisdom
         self.armor = 0
         self.magic_resist = 0
+        self.damage = 1
 
         # Creating list of skills & spells:
         self.skills = []
         self.spells = []
 
         # Creating equipment slots:
-        starting_gear_head = Equipment("None", equipment_type_armor, equipment_slot_head, 0)
-        starting_gear_body = Equipment("Plain Clothes", equipment_type_armor, equipment_slot_body, 1)
-        starting_gear_weapon = Equipment("Fist", equipment_type_dmg, equipment_slot_wep, 5)
+        self.head_armor = []
+        self.body_armor = []
+        self.weapon = []
+
+        starting_gear_head = Equipment("None", equipment_slot_head, 0, 0, 0)
+        starting_gear_body = Equipment("Plain Clothes", equipment_slot_body, 1, 1, 0)
+        starting_gear_weapon = Equipment("Fist", equipment_slot_wep, 0, 0, 5)
 
         self.equip_item(starting_gear_head)
         self.equip_item(starting_gear_body)
@@ -61,38 +63,34 @@ class Character():
     def equip_item(self, equipment: Equipment):
         # equipment class must be used.
         slot = equipment.slot
-        value = equipment.value
-        equip_type = equipment.type
+        armor = equipment.armor
+        mr = equipment.mr
+        dmg = equipment.damage
 
         print(f"Equipping {equipment.name} to {self.name}")
 
         if slot == "head":
             old_equip = self.head_armor
+            if old_equip != []:
+                self.armor -= old_equip.armor
+                self.magic_resist -= old_equip.mr
+                self.damage -= old_equip.damage
             self.head_armor = equipment
-            if equip_type == equipment_type_armor:
-                self.armor += value
-            if equip_type == equipment_type_mr:
-                self.magic_resist += value
-            else:
-                raise ValueError("Invalid equipment")
         if slot == "body":
             old_equip = self.body_armor
+            if old_equip != []:
+                self.armor -= old_equip.armor
+                self.magic_resist -= old_equip.mr
+                self.damage -= old_equip.damage
             self.body_armor = equipment
-            if equip_type == equipment_type_armor:
-                self.armor += value
-            if equip_type == equipment_type_mr:
-                self.magic_resist += value
-            else:
-                raise ValueError("Invalid equipment")
         if slot == "weapon":
             old_equip = self.weapon
+            if old_equip != []:
+                self.armor -= old_equip.armor
+                self.magic_resist -= old_equip.mr
+                self.damage -= old_equip.damage
             self.weapon = equipment
-            if equip_type == equipment_type_dmg:
-                self.damage -= old_equip.value
-                self.damage += value
-            else:
-                self.weapon = old_equip
-                raise ValueError("Invalid equipment")
+        raise ValueError("Invalid equipment")
     
     def melee_strike(self, target):
         # Calculating melee damage

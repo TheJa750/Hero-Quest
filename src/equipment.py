@@ -1,8 +1,9 @@
 import random
 
 class Equipment():
-    def __init__(self, name, type, slot, value):
+    def __init__(self, name, slot, armor, mr, damage):
         self.name = name
-        self.type = type
         self.slot = slot
-        self.value = value
+        self.armor = armor
+        self.mr = mr
+        self.damage = damage
