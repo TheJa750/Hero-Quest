@@ -11,15 +11,15 @@ class Character():
         # List MUST be in the following order:
         # [Strength, Agility, Constitution, Wisdom, Luck]
         self.name = name
-        self.__strength = stats[0]
-        self.__agility = stats[1]
-        self.__constitution = stats[2]
-        self.__wisdom = stats[3]
-        self.__luck = stats[4]
+        self.strength = stats[0]
+        self.agility = stats[1]
+        self.constitution = stats[2]
+        self.wisdom = stats[3]
+        self.luck = stats[4]
 
         # Calculating Health/Mana based on stats:
-        self.health = 100 * self.__constitution
-        self.mana = 25 * self.__wisdom
+        self.health = 100 * self.constitution
+        self.mana = 25 * self.wisdom
         self.armor = 0
         self.magic_resist = 0
         self.damage = 1
@@ -57,8 +57,8 @@ class Character():
 
     def __str__(self):
         # For debugging character creation
-        return f"""Name: {self.name}, Strength: {self.__strength}, Agility: {self.__agility},\
-             Constitution: {self.__constitution}, Wisdom: {self.__wisdom}, Luck: {self.__luck}"""
+        return f"""Name: {self.name}, Strength: {self.strength}, Agility: {self.agility}, \
+Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}"""
     
     def equip_item(self, equipment: Equipment):
         # equipment class must be used.
@@ -112,8 +112,13 @@ class Mage(Character):
         base_dmg = 50
         if self.mana - mana_cost >= 0:
             self.mana -= mana_cost
-            damage = base_dmg + (self.__wisdom * 5)
+            damage = base_dmg + (self.wisdom * 5)
             target.take_damage(damage, "magical")
+            print(f"Fireball hits {target.name} for {max(0, damage - (target.magic_resist * 5))} magical damage.")
+            if target.health > 0:
+                print(f"{target.name} has {target.health} health remaining")
+            elif target.health <= 0:
+                print(f"{target.name} has died.")
         else:
             print(f"{self.name} has insufficient mana to cast fireball.")
         
@@ -129,7 +134,7 @@ class Archer(Character):
     def double_shot(self, target):
         # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage
         print(f"{self.name} uses Double Shot to attack {target.name}.")
-        hit_chance = random.randrange(0, 100)
+        hit_chance = random.randint(0, 100)
         if hit_chance >= 30:
             pass
 

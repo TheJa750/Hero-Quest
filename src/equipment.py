@@ -7,3 +7,10 @@ class Equipment():
         self.armor = armor
         self.mr = mr
         self.damage = damage
+    
+    def __str__(self) -> str:
+        return f"{self.name}:\n\
+            Slot: {self.slot}\n\
+            Armor: {self.armor}\n\
+            Magic Resist: {self.mr}\n\
+            Damage: {self.damage}"
