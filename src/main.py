@@ -1,17 +1,14 @@
 import random
 from characters import *
 from equipment import *
+from random_gens import *
 
 def main():
     print("--------------------------------------------------------")
     print("Welcome to Fantasy Simulator".center(54))
     print("--------------------------------------------------------")
 
-    random_stats = [random.randint(0,10),
-                    random.randint(0,10),
-                    random.randint(0,10),
-                    random.randint(0,10),
-                    random.randint(0,10),]
+    random_stats = get_starting_stats()
     name = input("Character Name: ")
     print("Choose class type:\n1 = Mage\n2 = Archer\n3 = Warrior")
     char_type = input()
@@ -45,7 +42,7 @@ def main():
 
         char = Warrior(name, random_stats, starting_skill)
         
-    print(char)
-    print(char.invent)
+    print(f"Summary:\n{char}\nInventory:\n{char.invent}")
+    
 
 main()
