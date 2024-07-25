@@ -10,6 +10,9 @@ def main():
 
     random_stats = get_starting_stats()
     name = input("Character Name: ")
+    while not name == "":
+        print("Please enter a name.")
+        name = input()
     print("Choose class type:\n1 = Mage\n2 = Archer\n3 = Warrior")
     char_type = input()
     while not (char_type == "1" or char_type == "2" or char_type == "3"):

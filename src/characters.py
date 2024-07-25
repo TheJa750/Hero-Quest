@@ -22,28 +22,31 @@ class Character():
         self.mana = 25 * self.wisdom
         self.armor = 0
         self.magic_resist = 0
-        self.damage = 1
+        self.phys_damage = 0
+        self.mage_damage = 0
 
         # Creating list of skills & spells:
         self.skills = []
         self.spells = []
 
         # Creating equipment slots:
-        self.head_armor = []
-        self.body_armor = []
-        self.weapon = []
+        starting_gear_head = Equipment("None", equipment_slot_head, 0, 0, 0, 0)
+        starting_gear_body = Equipment("Plain Clothes", equipment_slot_body, 1, 1, 0, 0)
+        starting_gear_weapon = Equipment("Fist", equipment_slot_wep, 0, 0, 5, 0)
+                
+        self.head_armor = starting_gear_head
+        self.body_armor = starting_gear_body
+        self.weapon = starting_gear_weapon
 
-        starting_gear_head = Equipment("None", equipment_slot_head, 0, 0, 0)
-        starting_gear_body = Equipment("Plain Clothes", equipment_slot_body, 1, 1, 0)
-        starting_gear_weapon = Equipment("Fist", equipment_slot_wep, 0, 0, 5)
-
-        self.equip_item(starting_gear_head)
-        self.equip_item(starting_gear_body)
-        self.equip_item(starting_gear_weapon)
+        self.armor += self.head_armor.armor + self.body_armor.armor + self.weapon.armor
+        self.magic_resist += self.head_armor.mr + self.body_armor.mr + self.weapon.mr
+        self.phys_damage += self.head_armor.phys_damage + self.body_armor.phys_damage + self.weapon.phys_damage
+        self.mage_damage += self.head_armor.mage_damage + self.body_armor.mage_damage + self.weapon.mage_damage
 
         # Creating starting invetory shared by all types:
         self.invent = {"COINS": 100,
                        "HEALTH POTIONS": 0,
+                       "MANA POTIONS": 0
                        }
 
 
@@ -65,7 +68,8 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}"""
         slot = equipment.slot
         armor = equipment.armor
         mr = equipment.mr
-        dmg = equipment.damage
+        p_dmg = equipment.phys_damage
+        m_dmg = equipment.mage_damage
 
         print(f"Equipping {equipment.name} to {self.name}")
 
@@ -74,38 +78,48 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}"""
             self.head_armor = equipment
             self.armor += armor
             self.magic_resist += mr
-            self.damage += dmg
+            self.phys_damage += p_dmg
+            self.mage_damage += m_dmg
         elif slot == "body":
             old_equip = self.body_armor
             self.body_armor = equipment
             self.armor += armor
             self.magic_resist += mr
-            self.damage += dmg
+            self.phys_damage += p_dmg
+            self.mage_damage += m_dmg
         elif slot == "weapon":
             old_equip = self.weapon
             self.weapon = equipment
             self.armor += armor
             self.magic_resist += mr
-            self.damage += dmg
+            self.phys_damage += p_dmg
+            self.mage_damage += m_dmg
         else:
             raise ValueError("Invalid equipment")
         
-        if old_equip != []:
+        if not (old_equip.name == "None" or old_equip.name == "Plain Clothes" or old_equip.name == "Fist"):
             self.armor -= old_equip.armor
             self.magic_resist -= old_equip.mr
-            self.damage -= old_equip.damage
+            self.phys_damage -= old_equip.phys_damage
+            self.mage_damage -+ old_equip.mage_damage
             self.invent[old_equip.name] = old_equip
     
     def melee_strike(self, target):
         # Calculating melee damage
         print(f"{self.name} strikes {target.name} for {max(0, self.damage - (target.armor * 5))} physical damage.")
-        target.take_damage(self.damage, "physical")
+        target.take_damage(self.phys_damage, "physical")
 
 class Mage(Character):
     def __init__(self, name, stats, spells):
         super().__init__(name, stats)
         for spell in spells:
             self.spells.append(spell)
+
+        starting_gear = [Equipment("Starter's Wand", equipment_slot_wep, 0, 2, 5, 10),
+                         Equipment("Dusty Hat", equipment_slot_head, 1, 2, 0, 1)]
+        
+        for gear in starting_gear:
+            self.equip_item(gear)
         
     def cast_fireball(self, target, mana_cost):
         print(f"{self.name} attempts to cast a fireball at {target.name}.")
@@ -128,8 +142,14 @@ class Archer(Character):
         super().__init__(name, stats)
         for skill in skills:
             self.skills.append(skill)
+
         self.invent["ARROWS"] = 500
+
+        starting_gear = [Equipment("Starter's Bow", equipment_slot_wep, 0, 0, 15, 0),
+                         ]
         
+        for gear in starting_gear:
+            self.equip_item(gear)
 
     def double_shot(self, target):
         # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage
@@ -143,3 +163,9 @@ class Warrior(Character):
         super().__init__(name, stats)
         for skill in skills:
             self.skills.append(skill)
+
+        starting_gear = [Equipment("Starter's Sword", equipment_slot_wep, 1, -1, 10, 0),
+                         Equipment("Loose Chainmail", equipment_slot_body, 3, 0, 0, 0)]
+        
+        for gear in starting_gear:
+            self.equip_item(gear)
