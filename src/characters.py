@@ -51,10 +51,16 @@ class Character():
 
     def take_damage(self, damage, dmg_type):
         # Pretty self explanatory, takes damage based on damage type and armor
+        print(f"Incoming damage: {damage}. Armor: {self.armor}, MR: {self.magic_resist}")
         if dmg_type == "physical":
             self.health = self.health - max(0, damage - (self.armor * 5))
+            print(f"{self.name} takes {max(0, damage - (5 * self.armor))} physical damage.")
         elif dmg_type == "magical":
             self.health = self.health - max(0, damage - (self.magic_resist * 5))
+            print(f"{self.name} takes {max(0, damage - (self.magic_resist * 5))} magical damage.")
+        elif dmg_type == "true":
+            self.health = self.health - max(0, damage)
+            print(f"{self.name} takes {damage} true damage.")
         
         if self.health > 0:
             print(f"{self.name} has {self.health} health remaining.")
@@ -64,8 +70,9 @@ class Character():
     def __str__(self):
         # For debugging character creation
         return f"""Name: {self.name}, Strength: {self.strength}, Agility: {self.agility}, \
-Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}, Head Slot: {self.head_armor.name}, \
-    Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name}, Skills: {self.skills}, Spells: {self.spells}"""
+Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHead Slot: {self.head_armor.name}, \
+    Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.armor}, Magic Resist: {self.magic_resist} \
+    \nSkills: {self.skills}, Spells: {self.spells}"""
     
     def equip_item(self, equipment: Equipment):
         # equipment class must be used.
@@ -111,14 +118,14 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}, Hea
     
     def melee_strike(self, target):
         # Calculating melee damage
-        dmg = max(1, self.phys_damage + (5 * self.strength) - (target.armor * 5))
+        dmg = max(1, self.phys_damage + (5 * self.strength))
         print(f"{self.name} strikes {target.name} for {dmg} physical damage.")
         target.take_damage(dmg, "physical")
 
     def get_class_type(self):
         return type(self).__name__
 
-class Skeleton(Character):
+class Enemy(Character):
     def __init__(self, name, stats, diff_modifier = 1.0):
         #increase base stats by difficulty modifier
         new_stats = stats.copy()

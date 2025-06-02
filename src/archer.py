@@ -20,18 +20,27 @@ class Archer(Character):
         for gear in starting_gear:
             self.equip_item(gear)
     
-    def basic_shot(self, target: Character):
+    def basic_shot(self, target: Character,dmg_mod = 1.0, dmg_type = "physical"):
         if self.invent['ARROWS'] > 0:
             print(f"{self.name} shoots {target.name}.")
             self.invent['ARROWS'] -= 1
-            target.take_damage(self.phys_damage, "physical")
+            target.take_damage(dmg_mod * self.phys_damage, dmg_type)
+            print(f"Arrows remaining: {self.invent['ARROWS']}.")
+        else:
+            print("Not enough arrows!")
+            self.melee_strike(target)
 
     def double_shot(self, target: Character):
         # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage
         print(f"{self.name} uses Double Shot to attack {target.name}.")
+        self.basic_shot(target)
         hit_chance = random.randint(0, 100)
         if hit_chance >= 30:
-            pass
+            self.basic_shot(target, 0.75)
+        else:
+            print(f"{self.name}'s 2nd shot misses.")
 
     def piercing_shot(self, target: Character):
-        pass
+        #Fires a shot that ignores armor
+        print(f"{self.name} uses Piercing Shot to attack {target.name}.")
+        self.basic_shot(target, dmg_type="true")

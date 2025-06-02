@@ -1,4 +1,4 @@
-import random
+import random, time
 from characters import *
 from equipment import *
 from random_gens import *
@@ -19,13 +19,23 @@ def main():
 
     print(f"Summary:\n{char}\nInventory:\n{char.invent}")
 
-    enemy = Skeleton("Bones", [5,5,5,5,5], diff_modifier=1.5)
+    enemy = Enemy("Bones", [5,5,5,5,5], diff_modifier=1.5)
+    print(enemy)
 
+    """
     print(f"Testing battle: {char.name} vs {enemy.name}")
     print(divider)
 
     print("Begin!")
-    battle(char, enemy, divider)
+    #battle(char, enemy, divider)
+    """
+
+    print(divider)
+    print(char.phys_damage)
+    if char.get_class_type() == "Archer":
+        char.basic_shot(enemy) #type: ignore
+        char.double_shot(enemy) #type: ignore
+        char.piercing_shot(enemy) #type: ignore
 
 def battle(fighter1: Character, fighter2: Character, divider):
     #determine who goes first:
@@ -43,10 +53,12 @@ def battle(fighter1: Character, fighter2: Character, divider):
             fighter1.melee_strike(fighter2)
             if fighter2.health > 0:
                 fighter2.melee_strike(fighter1)
+            time.sleep(0.1)
         else:
             fighter2.melee_strike(fighter1)
             if fighter1.health > 0:
                 fighter1.melee_strike(fighter2)
+            time.sleep(0.1)
     
     print(divider)
     print("Battle Concluded")
@@ -86,7 +98,7 @@ def create_character(divider):
                 case _:
                     starting_spell = "Shadow Fangs"
 
-            char = Mage(name, random_stats, starting_spell)
+            char = Mage(name, random_stats, [starting_spell])
         
         case "2": #Archer
             char_type = "Archer"
@@ -103,7 +115,7 @@ def create_character(divider):
                 case _:
                     starting_skill = "Piercing Shot"
 
-            char = Archer(name, random_stats, starting_skill)
+            char = Archer(name, random_stats, [starting_skill])
 
         case _: #Warrior
             char_type = "Warrior"
@@ -122,7 +134,7 @@ def create_character(divider):
                 case _:
                     starting_skill = "Fury of Blows"
 
-            char = Warrior(name, random_stats, starting_skill)
+            char = Warrior(name, random_stats, [starting_skill])
     
     return char
      
