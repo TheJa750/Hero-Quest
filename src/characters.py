@@ -22,7 +22,7 @@ class Character():
         self.mana = 25 * self.wisdom
         self.armor = 0
         self.magic_resist = 0
-        self.phys_damage = 0
+        self.phys_damage = 5 * self.strength
         self.mage_damage = 0
 
         # Creating list of skills & spells:
@@ -49,19 +49,23 @@ class Character():
                        "MANA POTIONS": 0
                        }
 
-
-
     def take_damage(self, damage, dmg_type):
         # Pretty self explanatory, takes damage based on damage type and armor
         if dmg_type == "physical":
             self.health = self.health - max(0, damage - (self.armor * 5))
-        if dmg_type == "magical":
+        elif dmg_type == "magical":
             self.health = self.health - max(0, damage - (self.magic_resist * 5))
+        
+        if self.health > 0:
+            print(f"{self.name} has {self.health} health remaining.")
+        else:
+            print(f"{self.name} has died.")
 
     def __str__(self):
         # For debugging character creation
         return f"""Name: {self.name}, Strength: {self.strength}, Agility: {self.agility}, \
-Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}"""
+Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}, Head Slot: {self.head_armor.name}, \
+    Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name}, Skills: {self.skills}, Spells: {self.spells}"""
     
     def equip_item(self, equipment: Equipment):
         # equipment class must be used.
@@ -101,71 +105,23 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck}"""
             self.armor -= old_equip.armor
             self.magic_resist -= old_equip.mr
             self.phys_damage -= old_equip.phys_damage
-            self.mage_damage -+ old_equip.mage_damage
-            self.invent[old_equip.name] = old_equip
+            self.mage_damage -= old_equip.mage_damage
+            temp_dict = {old_equip.name: old_equip}
+            self.invent.update(temp_dict)
     
     def melee_strike(self, target):
         # Calculating melee damage
-        print(f"{self.name} strikes {target.name} for {max(0, self.damage - (target.armor * 5))} physical damage.")
-        target.take_damage(self.phys_damage, "physical")
+        dmg = max(1, self.phys_damage + (5 * self.strength) - (target.armor * 5))
+        print(f"{self.name} strikes {target.name} for {dmg} physical damage.")
+        target.take_damage(dmg, "physical")
 
-class Mage(Character):
-    def __init__(self, name, stats, spells):
-        super().__init__(name, stats)
-        for spell in spells:
-            self.spells.append(spell)
+    def get_class_type(self):
+        return type(self).__name__
 
-        starting_gear = [Equipment("Starter's Wand", equipment_slot_wep, 0, 2, 5, 10),
-                         Equipment("Dusty Hat", equipment_slot_head, 1, 2, 0, 1)]
-        
-        for gear in starting_gear:
-            self.equip_item(gear)
-        
-    def cast_fireball(self, target, mana_cost):
-        print(f"{self.name} attempts to cast a fireball at {target.name}.")
-        base_dmg = 50
-        if self.mana - mana_cost >= 0:
-            self.mana -= mana_cost
-            damage = base_dmg + (self.wisdom * 5)
-            target.take_damage(damage, "magical")
-            print(f"Fireball hits {target.name} for {max(0, damage - (target.magic_resist * 5))} magical damage.")
-            if target.health > 0:
-                print(f"{target.name} has {target.health} health remaining")
-            elif target.health <= 0:
-                print(f"{target.name} has died.")
-        else:
-            print(f"{self.name} has insufficient mana to cast fireball.")
-        
-
-class Archer(Character):
-    def __init__(self, name, stats, skills):
-        super().__init__(name, stats)
-        for skill in skills:
-            self.skills.append(skill)
-
-        self.invent["ARROWS"] = 500
-
-        starting_gear = [Equipment("Starter's Bow", equipment_slot_wep, 0, 0, 15, 0),
-                         ]
-        
-        for gear in starting_gear:
-            self.equip_item(gear)
-
-    def double_shot(self, target):
-        # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage
-        print(f"{self.name} uses Double Shot to attack {target.name}.")
-        hit_chance = random.randint(0, 100)
-        if hit_chance >= 30:
-            pass
-
-class Warrior(Character):
-    def __init__(self, name, stats, skills):
-        super().__init__(name, stats)
-        for skill in skills:
-            self.skills.append(skill)
-
-        starting_gear = [Equipment("Starter's Sword", equipment_slot_wep, 1, -1, 10, 0),
-                         Equipment("Loose Chainmail", equipment_slot_body, 3, 0, 0, 0)]
-        
-        for gear in starting_gear:
-            self.equip_item(gear)
+class Skeleton(Character):
+    def __init__(self, name, stats, diff_modifier = 1.0):
+        #increase base stats by difficulty modifier
+        new_stats = stats.copy()
+        for stat in new_stats:
+            stat = stat * diff_modifier
+        super().__init__(name, new_stats)
