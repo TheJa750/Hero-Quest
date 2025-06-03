@@ -20,8 +20,10 @@ class Character():
         self.level = 1
 
         # Calculating Health/Mana based on stats:
-        self.health = 100 * self.constitution
-        self.mana = 25 * self.wisdom
+        self.max_health = 100 * self.constitution
+        self.health = self.max_health
+        self.max_mana = 25 * self.wisdom
+        self.mana = self.max_mana
         self.armor = 0
         self.magic_resist = 0
         self.phys_damage = 5 * self.strength
@@ -120,8 +122,8 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
     
     def melee_strike(self, target):
         # Calculating melee damage
-        dmg = max(1, self.phys_damage + (5 * self.strength))
-        print(f"{self.name} strikes {target.name} for {dmg} physical damage.")
+        dmg = max(1, self.phys_damage)
+        print(f"{self.name} strikes {target.name}.")
         target.take_damage(dmg, "physical")
 
     def get_class_type(self):
@@ -147,9 +149,17 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
         print(f"Congratulations! {self.name} has reached level {self.level}!")
         
         if self.level % 5 == 0:
-            self.add_stats(6)
+            self.add_stats(6) #double points every 5th level
         else:
             self.add_stats(3)
+
+        #Refill health/mana and update physical damage
+        self.max_health = 100 * self.constitution
+        self.health = self.max_health
+        self.max_mana = 25 * self.wisdom
+        self.mana = self.max_mana
+        self.phys_damage = ((5 * self.strength) + self.head_armor.phys_damage
+                            + self.body_armor.phys_damage + self.weapon.phys_damage)
 
     def add_stats(self, new_points):
         print(f"{new_points} stat points available.")
@@ -176,10 +186,24 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
             valid_inputs.append(f"{i}")
         assign = validate_input(f"How many points would you like to add to {stat}?",
                                 valid_inputs,
-                                f"Please enter a valid amount (0 - {new_points})")
+                                f"Please enter a valid amount (0 - {new_points}).")
         
-    
+        match stat:
+            case "Strength":
+                self.strength += int(assign)
+            case "Agility":
+                self.agility += int(assign)
+            case "Constitution":
+                self.constitution += int(assign)
+            case "Wisdom":
+                self.wisdom += int(assign)
+            case "Luck":
+                self.luck += int(assign)
 
+        if int(assign) < new_points:
+            self.add_stats(new_points - int(assign))
+        else:
+            return
 
 class Enemy(Character):
     def __init__(self, name, stats, diff_modifier = 1.0):
@@ -188,3 +212,6 @@ class Enemy(Character):
         for stat in new_stats:
             stat = stat * diff_modifier
         super().__init__(name, new_stats)
+
+    def __str__(self):
+        return f"Name: {self.name} Health: {self.health}"
