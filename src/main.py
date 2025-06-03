@@ -31,11 +31,7 @@ def main():
     """
 
     print(divider)
-    print(char.phys_damage)
-    if char.get_class_type() == "Archer":
-        char.basic_shot(enemy) #type: ignore
-        char.double_shot(enemy) #type: ignore
-        char.piercing_shot(enemy) #type: ignore
+
 
 def battle(fighter1: Character, fighter2: Character, divider):
     #determine who goes first:
@@ -74,11 +70,10 @@ def create_character(divider):
         print("Please enter a name.")
         name = input()
     print(divider)
-    print("Choose class type:\n1 = Mage\n2 = Archer\n3 = Warrior")
-    char_type = input()
-    while not (char_type == "1" or char_type == "2" or char_type == "3"):
-        print("Please choose a valid class.")
-        char_type = input()
+
+    char_type = validate_input("Choose class type:\n1 = Mage\n2 = Archer\n3 = Warrior",
+                               ["1","2","3"],
+                               "Please choose a valid class.")
     
     match char_type:
         case "1": #Mage
@@ -138,5 +133,13 @@ def create_character(divider):
     
     return char
      
+def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
+    print(prompt)
+    while True:
+        user_input = input()
+        if user_input in valid_inputs:
+            return user_input
+        else:
+            print(reprompt)
 
 main()

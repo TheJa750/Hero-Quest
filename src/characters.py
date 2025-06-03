@@ -1,6 +1,6 @@
 import random
 from equipment import *
-
+from main import validate_input
 equipment_slot_head = "head"
 equipment_slot_body = "body"
 equipment_slot_wep = "weapon"
@@ -16,6 +16,8 @@ class Character():
         self.constitution = stats[2]
         self.wisdom = stats[3]
         self.luck = stats[4]
+        self.exp = 0
+        self.level = 1
 
         # Calculating Health/Mana based on stats:
         self.health = 100 * self.constitution
@@ -51,7 +53,7 @@ class Character():
 
     def take_damage(self, damage, dmg_type):
         # Pretty self explanatory, takes damage based on damage type and armor
-        print(f"Incoming damage: {damage}. Armor: {self.armor}, MR: {self.magic_resist}")
+        #print(f"Incoming damage: {damage}. Armor: {self.armor}, MR: {self.magic_resist}")
         if dmg_type == "physical":
             self.health = self.health - max(0, damage - (self.armor * 5))
             print(f"{self.name} takes {max(0, damage - (5 * self.armor))} physical damage.")
@@ -124,6 +126,60 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
 
     def get_class_type(self):
         return type(self).__name__
+    
+    def gain_exp(self, exp_amount):
+        #exp will be amount needed to reach next level.
+        if exp_amount >= self.exp:
+            exp = exp_amount - self.exp #get remainder toward next level
+            self.level_up() #level up and calc new exp requirement
+            self.exp -= exp #remove remainder from new requirement
+        else:
+            self.exp -= exp_amount #count down toward leveling up
+
+        print(f"Exp remaining until level {self.level + 1}: {self.exp}")
+
+    def level_up(self):
+        self.level += 1
+        exp_needed = 0
+        for i in range(self.level + 1):
+            exp_needed += i * 100
+        self.exp = exp_needed
+        print(f"Congratulations! {self.name} has reached level {self.level}!")
+        
+        if self.level % 5 == 0:
+            self.add_stats(6)
+        else:
+            self.add_stats(3)
+
+    def add_stats(self, new_points):
+        print(f"{new_points} stat points available.")
+        print("How would you like to distribute these points?") # [Strength, Agility, Constitution, Wisdom, Luck]
+        valid_inputs = ["1", "2", "3", "4", "5"]
+        choice = validate_input("1 = Strength\n2 = Agility\n3 = Constitution\n4 = Wisdom\n5 = Luck",
+                                valid_inputs,
+                                "Please select a valid stat.")
+        match choice:
+            case "1":
+                stat = "Strength"
+            case "2":
+                stat = "Agility"
+            case "3":
+                stat = "Constitution"
+            case "4":
+                stat = "Wisdom"
+            case _:
+                stat = "Luck"
+        
+        print(f"How many points would you like to add to {stat}?")
+        valid_inputs = []
+        for i in range(new_points + 1):
+            valid_inputs.append(f"{i}")
+        assign = validate_input(f"How many points would you like to add to {stat}?",
+                                valid_inputs,
+                                f"Please enter a valid amount (0 - {new_points})")
+        
+    
+
 
 class Enemy(Character):
     def __init__(self, name, stats, diff_modifier = 1.0):
