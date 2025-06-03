@@ -204,6 +204,12 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
             self.add_stats(new_points - int(assign))
         else:
             return
+        
+    def learn_skill(self, skill: str):
+        self.skills.append(skill)
+
+    def learn_spell(self, spell: str):
+        self.spells.append(spell)
 
 class Enemy(Character):
     def __init__(self, name, stats, diff_modifier = 1.0):

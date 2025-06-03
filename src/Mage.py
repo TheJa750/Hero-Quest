@@ -26,7 +26,7 @@ class Mage(Character):
             self.mana -= mana_cost
             damage = base_dmg + (self.wisdom * 5) + self.mage_damage
             target.take_damage(damage, "magical")
-            print(f"Fireball hits {target.name} for {max(0, damage - (target.magic_resist * 5))} magical damage.")
+            print(f"Fireball hits {target.name}.")
         else:
             print(f"{self.name} has insufficient mana to cast Fireball.")
     
@@ -38,7 +38,7 @@ class Mage(Character):
             self.mana -= mana_cost
             damage = base_dmg + (self.wisdom * 2.5) + self.mage_damage
             target.take_damage(damage, "magical")
-            print(f"Chain Lightning hits {target.name} for {max(0, damage - (target.magic_resist * 5))} magical damage.")
+            print(f"Chain Lightning hits {target.name}.")
         else:
             print(f"{self.name} has insufficient mana to cast Chain Lightning.")
         
@@ -51,8 +51,8 @@ class Mage(Character):
             self.mana -= mana_cost
             damage = base_dmg + (self.wisdom * 2.5) + self.mage_damage
             target.take_damage(damage, "magical")
-            print(f"Shadow Fangs hits {target.name} for {max(0, damage - (target.magic_resist * 5))} magical damage.")
+            print(f"Shadow Fangs hits {target.name}.")
             target.take_damage(damage, "magical")
-            print(f"Shadow Fangs hits {target.name} for {max(0, damage - (target.magic_resist * 5))} magical damage.")
+            print(f"Shadow Fangs hits {target.name}.")
         else:
             print(f"{self.name} has insufficient mana to cast Shadow Fangs.")
