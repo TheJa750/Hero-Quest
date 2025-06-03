@@ -212,12 +212,33 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
         self.spells.append(spell)
 
 class Enemy(Character):
-    def __init__(self, name, stats, diff_modifier = 1.0):
-        #increase base stats by difficulty modifier
-        new_stats = stats.copy()
-        for stat in new_stats:
-            stat = stat * diff_modifier
-        super().__init__(name, new_stats)
+    def __init__(self, name, stats, level = 1, growth = 1):
+        #level is for scaling monsters, growth is for stat points per level (in each stat)
+        super().__init__(name, stats)
+        self.growth = growth
+
+        for i in range(self.level, level + 1):
+            self.level_up()
 
     def __str__(self):
         return f"Name: {self.name} Health: {self.health}"
+    
+    def level_up(self):
+        self.level += 1
+               
+        self.add_stats(self.growth)
+
+        #Refill health/mana and update physical damage
+        self.max_health = 100 * self.constitution
+        self.health = self.max_health
+        self.max_mana = 25 * self.wisdom
+        self.mana = self.max_mana
+        self.phys_damage = ((5 * self.strength) + self.head_armor.phys_damage
+                            + self.body_armor.phys_damage + self.weapon.phys_damage)
+        
+    def add_enemy_stats(self, per_level):
+        self.strength += per_level
+        self.agility += per_level
+        self.constitution += per_level
+        self.wisdom += per_level
+        self.luck += per_level

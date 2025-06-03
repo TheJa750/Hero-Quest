@@ -19,8 +19,8 @@ def main():
 
     print(f"Summary:\n{char}\nInventory:\n{char.invent}")
 
-    enemy = Enemy("Bones", [5,5,5,5,5], diff_modifier=1.5)
-    print(enemy)
+    #enemy = Enemy("Bones", [5,5,5,5,5], diff_modifier=1.5)
+    #print(enemy)
 
     """
     print(f"Testing battle: {char.name} vs {enemy.name}")
