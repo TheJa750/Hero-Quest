@@ -5,6 +5,7 @@ from random_gens import *
 from archer import *
 from Warrior import *
 from Mage import *
+from menu import *
 
 # Stats MUST be in the following order:
 # [Strength, Agility, Constitution, Wisdom, Luck]
@@ -18,17 +19,6 @@ def main():
     char = create_character(divider)
 
     print(f"Summary:\n{char}\nInventory:\n{char.invent}")
-
-    #enemy = Enemy("Bones", [5,5,5,5,5], diff_modifier=1.5)
-    #print(enemy)
-
-    """
-    print(f"Testing battle: {char.name} vs {enemy.name}")
-    print(divider)
-
-    print("Begin!")
-    #battle(char, enemy, divider)
-    """
 
     print(divider)
 
