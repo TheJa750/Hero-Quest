@@ -1,9 +1,17 @@
 import random
 from equipment import *
-from main import validate_input
 equipment_slot_head = "head"
 equipment_slot_body = "body"
 equipment_slot_wep = "weapon"
+
+def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
+    print(prompt)
+    while True:
+        user_input = input()
+        if user_input in valid_inputs:
+            return user_input
+        else:
+            print(reprompt)
 
 class Character():
     def __init__(self, name, stats):
@@ -162,8 +170,8 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
                             + self.body_armor.phys_damage + self.weapon.phys_damage)
 
     def add_stats(self, new_points):
-        print(f"{new_points} stat points available.")
-        print("How would you like to distribute these points?") # [Strength, Agility, Constitution, Wisdom, Luck]
+        print(f"{new_points} stat point(s) available.")
+        print("How would you like to distribute these point(s)?") # [Strength, Agility, Constitution, Wisdom, Luck]
         valid_inputs = ["1", "2", "3", "4", "5"]
         choice = validate_input("1 = Strength\n2 = Agility\n3 = Constitution\n4 = Wisdom\n5 = Luck",
                                 valid_inputs,
@@ -180,7 +188,6 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
             case _:
                 stat = "Luck"
         
-        print(f"How many points would you like to add to {stat}?")
         valid_inputs = []
         for i in range(new_points + 1):
             valid_inputs.append(f"{i}")
@@ -191,14 +198,19 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
         match stat:
             case "Strength":
                 self.strength += int(assign)
+                print(f"Strength: {self.strength}")
             case "Agility":
                 self.agility += int(assign)
+                print(f"Agility: {self.agility}")
             case "Constitution":
                 self.constitution += int(assign)
+                print(f"Constitution: {self.constitution}")
             case "Wisdom":
                 self.wisdom += int(assign)
+                print(f"Wisdom: {self.wisdom}")
             case "Luck":
                 self.luck += int(assign)
+                print(f"Luck: {self.luck}")
 
         if int(assign) < new_points:
             self.add_stats(new_points - int(assign))
@@ -218,15 +230,15 @@ class Enemy(Character):
         self.growth = growth
 
         for i in range(self.level, level + 1):
-            self.level_up()
+            self.level_up_enemy()
 
     def __str__(self):
-        return f"Name: {self.name} Health: {self.health}"
+        return f"Name: {self.name} Level: {self.level} Health: {self.health}"
     
-    def level_up(self):
+    def level_up_enemy(self):
         self.level += 1
                
-        self.add_stats(self.growth)
+        self.add_enemy_stats(self.growth)
 
         #Refill health/mana and update physical damage
         self.max_health = 100 * self.constitution

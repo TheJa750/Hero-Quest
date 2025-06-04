@@ -5,7 +5,7 @@ from random_gens import *
 from archer import *
 from Warrior import *
 from Mage import *
-from menu import *
+from Menus import *
 
 # Stats MUST be in the following order:
 # [Strength, Agility, Constitution, Wisdom, Luck]
@@ -20,7 +20,18 @@ def main():
 
     print(f"Summary:\n{char}\nInventory:\n{char.invent}")
 
+
     print(divider)
+    enemy_list = []
+    for i in range(random.randint(1,4)):
+        stats = get_starting_stats(random.randint(30,40))
+        enemy = Enemy(f"Enemy {i+1}", stats)
+        enemy_list.append(enemy)
+
+    for enemy in enemy_list:
+        print(enemy)
+
+    main_combat_menu(char, enemy_list)
 
 
 def battle(fighter1: Character, fighter2: Character, divider):

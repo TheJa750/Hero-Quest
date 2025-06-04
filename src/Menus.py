@@ -1,13 +1,21 @@
 import random
-from main import validate_input
 from characters import *
 from archer import *
 from Warrior import *
 from Mage import *
 
+def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
+    print(prompt)
+    while True:
+        user_input = input()
+        if user_input in valid_inputs:
+            return user_input
+        else:
+            print(reprompt)
+
 def target_selection_menu(enemies: list):
     i = 1
-    strings = []
+    strings = ["Select an enemy to attack:"]
     valid_inputs = ["0"]
     for enemy in enemies:
         strings.append(f"{i} = {enemy}")
@@ -33,14 +41,14 @@ def skills_menu(player: Character,enemies: list):
         else:
             target_str = target_selection_menu(enemies)
             if target_str != "0": #Target selected was not "Back"
-                target = enemies[int(target_str)]
+                target = enemies[int(target_str)-1]
                 skill_str = player.skills[int(choice) - 1].lower().replace(" ", "_")
                 player.__getattribute__(skill_str)(target)
                 return True
 
 def spells_menu(player: Character,enemies: list):
     while True:
-        strings = ["Available Skills:"]
+        strings = ["Available Spells:"]
         valid_inputs = ["0"]
         for i in range(1, len(player.spells) + 1):
             strings.append(f"{i} = {player.spells[i-1]}")
