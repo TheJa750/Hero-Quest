@@ -24,12 +24,11 @@ class Archer(Character):
         if self.invent['ARROWS'] > 0:
             print(f"{self.name} shoots {target.name}.")
             self.invent['ARROWS'] -= 1
-            target.take_damage(dmg_mod * self.phys_damage, dmg_type)
+            target.take_damage(round(dmg_mod * self.phys_damage), dmg_type)
             print(f"Arrows remaining: {self.invent['ARROWS']}.")
         else:
             print("Not enough arrows!")
             self.melee_strike(target)
-        return True
 
     def double_shot(self, target: Character):
         # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage

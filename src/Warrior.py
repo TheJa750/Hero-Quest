@@ -26,14 +26,14 @@ class Warrior(Character):
 
         if target2 and target3:
             print(f"The sweep hits {target2.name} and {target3.name}.")
-            target2.take_damage(0.75 * dmg, "physical")
-            target3.take_damage(0.75 * dmg, "physical")
+            target2.take_damage(round(0.75 * dmg), "physical")
+            target3.take_damage(round(0.75 * dmg), "physical")
         elif target2:
             print(f"The sweep hits {target2.name}.")
-            target2.take_damage(0.75 * dmg, "physical")
+            target2.take_damage(round(0.75 * dmg), "physical")
         elif target3:
             print(f"The sweep hits {target3.name}.")
-            target3.take_damage(0.75 * dmg, "physical")
+            target3.take_damage(round(0.75 * dmg), "physical")
         else:
             print("No other targets in range.")
 
@@ -53,5 +53,5 @@ class Warrior(Character):
         dmg = max(1, 0.5 * self.phys_damage)
         print(f"{self.name} quickly attacks {target.name} {num_attacks} times.")
         for i in range(0, num_attacks):
-            target.take_damage(dmg, "physical")
+            target.take_damage(round(dmg), "physical")
         return True

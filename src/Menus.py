@@ -38,12 +38,12 @@ def skills_menu(player: Character,enemies: list):
                 skill_str = player.skills[int(choice) - 1].lower().replace(" ", "_")
 
                 if skill_str in splash_skills:
-                    if enemies[int(target_str) - 1]:
-                        target2 = enemies[int(target_str) - 1]
+                    if (int(target_str) - 2 >= 0) and enemies[int(target_str) - 2]:
+                        target2 = enemies[int(target_str) - 2]
                     else:
                         target2 = None
-                    if enemies[int(target_str) + 1]:
-                        target3 = enemies[int(target_str) + 1]
+                    if (int(target_str) < len(enemies)) and enemies[int(target_str)]:
+                        target3 = enemies[int(target_str)]
                     else:
                         target3 = None
                     action_taken = player.__getattribute__(skill_str)(target, target2, target3)
@@ -71,16 +71,16 @@ def spells_menu(player: Character,enemies: list):
         else:
             target_str = target_selection_menu(enemies)
             if target_str != "0": #Target selected was not "Back"
-                target = enemies[int(target_str)]
+                target = enemies[int(target_str)-1]
                 spell_str = "cast_" + player.spells[int(choice) - 1].lower().replace(" ", "_")
 
-                if spell_str in splash_spells:
-                    if enemies[int(target_str) - 1]:
-                        target2 = enemies[int(target_str) - 1]
+                if spell_str in splash_spells: #spell can splash to other enemies
+                    if (int(target_str) - 2 >= 0) and enemies[int(target_str) - 2]: #checking target left
+                        target2 = enemies[int(target_str) - 2]
                     else:
                         target2 = None
-                    if enemies[int(target_str) + 1]:
-                        target3 = enemies[int(target_str) + 1]
+                    if (int(target_str) < len(enemies)) and enemies[int(target_str)]: #checking target right
+                        target3 = enemies[int(target_str)]
                     else:
                         target3 = None
                     action_taken = player.__getattribute__(spell_str)(target, target2, target3)
@@ -94,27 +94,30 @@ def spells_menu(player: Character,enemies: list):
 
 def main_combat_menu(player: Character, enemies: list):
     while True:
-        prompt = ("1. Basic Attack\n2. Skills\n3. Spells\n4. Flee")
+        prompt = ("1 = Basic Attack\n2 = Skills\n3 = Spells\n4 = Flee")
         valid_inputs = ["1", "2", "3", "4"]
         choice = validate_input(prompt, valid_inputs)
 
         match choice:
-            case "1":
+            case "1": #Basic Attack - might need to check if player == archer and if so use basic_shot rather than melee_strike
                 target_str = target_selection_menu(enemies)
                 if target_str != "0":
-                    target = enemies[int(target_str)]
-                    player.melee_strike(target)
-                    return
+                    target = enemies[int(target_str)-1]
+                    if player is Archer:
+                        player.basic_shot(target)
+                    else:
+                        player.melee_strike(target)
+                    return 0
                 
-            case "2":
+            case "2": #Select skill
                 action_taken = skills_menu(player, enemies)
                 if action_taken:
-                    return
+                    return 0
                 
-            case "3":
+            case "3": #Select spell
                 action_taken = spells_menu(player, enemies)
                 if action_taken:
-                    return
+                    return 0
             
-            case "4":
-                return
+            case "4": #Flee
+                return 1

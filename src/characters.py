@@ -57,13 +57,13 @@ class Character():
         # Pretty self explanatory, takes damage based on damage type and armor
         #print(f"Incoming damage: {damage}. Armor: {self.armor}, MR: {self.magic_resist}")
         if dmg_type == "physical":
-            self.health = self.health - max(0, damage - (self.armor * 5))
-            print(f"{self.name} takes {max(0, damage - (5 * self.armor))} physical damage.")
+            self.health = self.health - max(1, damage - (self.armor * 5))
+            print(f"{self.name} takes {max(1, damage - (5 * self.armor))} physical damage.")
         elif dmg_type == "magical":
-            self.health = self.health - max(0, damage - (self.magic_resist * 5))
-            print(f"{self.name} takes {max(0, damage - (self.magic_resist * 5))} magical damage.")
+            self.health = self.health - max(1, damage - (self.magic_resist * 5))
+            print(f"{self.name} takes {max(1, damage - (self.magic_resist * 5))} magical damage.")
         elif dmg_type == "true":
-            self.health = self.health - max(0, damage)
+            self.health = self.health - damage
             print(f"{self.name} takes {damage} true damage.")
         
         if self.health > 0:
@@ -221,8 +221,9 @@ class Enemy(Character):
         super().__init__(name, stats)
         self.growth = growth
 
-        for i in range(self.level, level + 1):
-            self.level_up_enemy()
+        if level > 1:
+            for i in range(self.level, level + 1):
+                self.level_up_enemy()
 
     def __str__(self):
         return f"Name: {self.name} Level: {self.level} Health: {self.health}"

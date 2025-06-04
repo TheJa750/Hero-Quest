@@ -24,9 +24,10 @@ class Mage(Character):
         mana_cost = 25
         if self.mana - mana_cost >= 0:
             self.mana -= mana_cost
-            damage = base_dmg + (self.wisdom * 5) + self.mage_damage
-            target.take_damage(damage, "magical")
+            damage = round(base_dmg + (self.wisdom * 5) + self.mage_damage)
             print(f"Fireball hits {target.name}.")
+            target.take_damage(damage, "magical")
+            
             return True
         else:
             print(f"{self.name} has insufficient mana to cast Fireball.")
@@ -36,13 +37,13 @@ class Mage(Character):
         #Lightning spell that chains to nearby enemies
         print(f"{self.name} attempts to cast Chain Lightning at {target1.name}.")
         base_dmg = 30
-        mana_cost = 20
+        mana_cost = 30
         if self.mana - mana_cost >= 0:
             self.mana -= mana_cost
-            dmg = base_dmg + (self.wisdom * 2.5) + self.mage_damage
-            target1.take_damage(dmg, "magical")
+            dmg = round(base_dmg + (self.wisdom * 2.5) + self.mage_damage)
             print(f"Chain Lightning hits {target1.name}.")
-
+            target1.take_damage(dmg, "magical")
+            
             if target2 and target3:
                 print(f"The lightning arcs to {target2.name} and {target3.name}.")
                 target2.take_damage(dmg, "magical")
@@ -68,11 +69,11 @@ class Mage(Character):
         mana_cost = 20
         if self.mana - mana_cost >= 0:
             self.mana -= mana_cost
-            damage = base_dmg + (self.wisdom * 2.5) + self.mage_damage
-            target.take_damage(damage, "magical")
+            damage = round(base_dmg + (self.wisdom * 2.5) + self.mage_damage)
             print(f"Shadow Fangs hits {target.name}.")
             target.take_damage(damage, "magical")
             print(f"Shadow Fangs hits {target.name}.")
+            target.take_damage(damage, "magical")
             return True
         else:
             print(f"{self.name} has insufficient mana to cast Shadow Fangs.")

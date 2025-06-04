@@ -22,28 +22,55 @@ def main():
 
     print(divider)
     enemy_list = []
-    for i in range(random.randint(1,4)):
-        stats = get_starting_stats(random.randint(30,40))
-        enemy = Enemy(f"Enemy {i+1}", stats)
+    for i in range(5):
+        random_level = random.randint(1,5)
+        growth = 3
+        stats = get_starting_stats(30)
+        enemy = Enemy(f"Enemy {i+1}", stats, random_level, growth)
         enemy_list.append(enemy)
 
     for enemy in enemy_list:
         print(enemy)
+    """
+    print("These are some long odds...")
+    print("Wait! Whats that?")
 
-    main_combat_menu(char, enemy_list)
+    godsword = Equipment("Game-maker's Wrath", "weapon", 50, 50, 750, 750)
+    char.equip_item(godsword)
+    """
+    battle(char, enemy_list)
 
 
 def battle(player: Character, enemies: list):
+    #Need some logic determining battle order, for now player will always go first so that I can make the battle loop work
     
-    
+    #Main battle loop, if player is alive and at least 1 enemy is alive battle continues
     while player.health > 0 and len(enemies) > 0:
+
+
+        action_code = main_combat_menu(player, enemies)
         print(divider)
 
-    
+        if action_code != 0:
+            print(f"{player.name} has fled succesfully.")
+            break
+
+        for enemy in enemies:
+            if enemy.health <= 0:
+                enemies.remove(enemy)
+
+        if len(enemies) > 0:
+            for enemy in enemies:
+                time.sleep(0.25)
+                enemy.melee_strike(player)
+                print(divider)
+                if player.health <= 0:
+                    break
+
     print(divider)
     print("Battle Concluded")
     if player.health > 0:
-        print(f"The winner is {player.name}")
+        print(f"The winner is {player.name}.")
     else:
         print("You have died.")
         print("Thank you for playing Fantasy Simulator!")
