@@ -1,4 +1,5 @@
 import random
+divider = "--------------------------------------------------------"
 
 def get_starting_stats(points=45):
     stats = ["str", "agi", "con", "wis", "luck"]
@@ -23,3 +24,13 @@ def get_starting_stats(points=45):
             luck += 1
     
     return [strength, agility, constitution, wisdom, luck]
+
+def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
+    print(divider)
+    print(prompt)
+    while True:
+        user_input = input()
+        if user_input in valid_inputs:
+            return user_input
+        else:
+            print(reprompt)

@@ -27,20 +27,39 @@ class Mage(Character):
             damage = base_dmg + (self.wisdom * 5) + self.mage_damage
             target.take_damage(damage, "magical")
             print(f"Fireball hits {target.name}.")
+            return True
         else:
             print(f"{self.name} has insufficient mana to cast Fireball.")
+            return False
     
-    def cast_chain_lightning(self, target):
-        print(f"{self.name} attempts to cast Chain Lightning at {target.name}.")
+    def cast_chain_lightning(self, target1, target2 = None, target3 = None):
+        #Lightning spell that chains to nearby enemies
+        print(f"{self.name} attempts to cast Chain Lightning at {target1.name}.")
         base_dmg = 30
-        mana_cost = 10
+        mana_cost = 20
         if self.mana - mana_cost >= 0:
             self.mana -= mana_cost
-            damage = base_dmg + (self.wisdom * 2.5) + self.mage_damage
-            target.take_damage(damage, "magical")
-            print(f"Chain Lightning hits {target.name}.")
+            dmg = base_dmg + (self.wisdom * 2.5) + self.mage_damage
+            target1.take_damage(dmg, "magical")
+            print(f"Chain Lightning hits {target1.name}.")
+
+            if target2 and target3:
+                print(f"The lightning arcs to {target2.name} and {target3.name}.")
+                target2.take_damage(dmg, "magical")
+                target3.take_damage(dmg, "magical")
+            elif target2:
+                print(f"The lightning arcs to {target2.name}.")
+                target2.take_damage(dmg, "magical")
+            elif target3:
+                print(f"The lightning arcs to {target3.name}.")
+                target3.take_damage(dmg, "magical")
+            else:
+                print("No other targets in range.")
+
+            return True
         else:
             print(f"{self.name} has insufficient mana to cast Chain Lightning.")
+            return False
         
     def cast_shadow_fangs(self, target):
         # Shadow Fangs - strikes target twice, each one gets offensive bonuses to damage, but also defensive reduction to damage.
@@ -54,5 +73,7 @@ class Mage(Character):
             print(f"Shadow Fangs hits {target.name}.")
             target.take_damage(damage, "magical")
             print(f"Shadow Fangs hits {target.name}.")
+            return True
         else:
             print(f"{self.name} has insufficient mana to cast Shadow Fangs.")
+            return False

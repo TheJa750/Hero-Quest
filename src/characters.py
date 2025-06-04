@@ -1,17 +1,9 @@
 import random
 from equipment import *
+from random_functions import *
 equipment_slot_head = "head"
 equipment_slot_body = "body"
 equipment_slot_wep = "weapon"
-
-def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
-    print(prompt)
-    while True:
-        user_input = input()
-        if user_input in valid_inputs:
-            return user_input
-        else:
-            print(reprompt)
 
 class Character():
     def __init__(self, name, stats):

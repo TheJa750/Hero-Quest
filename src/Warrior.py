@@ -37,11 +37,15 @@ class Warrior(Character):
         else:
             print("No other targets in range.")
 
+        return True
+
     def devastating_strike(self, target):
         #Deals true damage
         dmg = max(1, self.phys_damage)
         print(f"{self.name} lands a powerful blow on {target.name}.")
         target.take_damage(dmg, "true")
+
+        return True
 
     def fury_of_blows(self, target):
         #Attacks a random number of times (2-5 inclusive), each for 50% damage
@@ -50,3 +54,4 @@ class Warrior(Character):
         print(f"{self.name} quickly attacks {target.name} {num_attacks} times.")
         for i in range(0, num_attacks):
             target.take_damage(dmg, "physical")
+        return True

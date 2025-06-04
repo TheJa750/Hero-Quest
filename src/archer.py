@@ -29,6 +29,7 @@ class Archer(Character):
         else:
             print("Not enough arrows!")
             self.melee_strike(target)
+        return True
 
     def double_shot(self, target: Character):
         # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage
@@ -39,8 +40,10 @@ class Archer(Character):
             self.basic_shot(target, 0.75)
         else:
             print(f"{self.name}'s 2nd shot misses.")
+        return True
 
     def piercing_shot(self, target: Character):
         #Fires a shot that ignores armor
         print(f"{self.name} uses Piercing Shot to attack {target.name}.")
         self.basic_shot(target, dmg_type="true")
+        return True

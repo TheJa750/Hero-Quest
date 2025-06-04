@@ -1,7 +1,7 @@
 import random, time
 from characters import *
 from equipment import *
-from random_gens import *
+from random_functions import *
 from archer import *
 from Warrior import *
 from Mage import *
@@ -11,12 +11,11 @@ from Menus import *
 # [Strength, Agility, Constitution, Wisdom, Luck]
 
 def main():
-    divider = "--------------------------------------------------------"
     print(divider)
     print("Welcome to Fantasy Simulator".center(54))
     print(divider)
 
-    char = create_character(divider)
+    char = create_character()
 
     print(f"Summary:\n{char}\nInventory:\n{char.invent}")
 
@@ -34,37 +33,22 @@ def main():
     main_combat_menu(char, enemy_list)
 
 
-def battle(fighter1: Character, fighter2: Character, divider):
-    #determine who goes first:
-    if fighter1.agility > fighter2.agility:
-        #fighter1 goes first
-        first = "1"
-    elif fighter1.agility < fighter2.agility:
-        first = "2"
-    else:
-        first = random.choice(["1","2"])
+def battle(player: Character, enemies: list):
     
-    while fighter1.health > 0 and fighter2.health > 0:
+    
+    while player.health > 0 and len(enemies) > 0:
         print(divider)
-        if first == "1":
-            fighter1.melee_strike(fighter2)
-            if fighter2.health > 0:
-                fighter2.melee_strike(fighter1)
-            time.sleep(0.1)
-        else:
-            fighter2.melee_strike(fighter1)
-            if fighter1.health > 0:
-                fighter1.melee_strike(fighter2)
-            time.sleep(0.1)
+
     
     print(divider)
     print("Battle Concluded")
-    if fighter1.health > 0:
-        print(f"The winner is {fighter1.name}")
+    if player.health > 0:
+        print(f"The winner is {player.name}")
     else:
-        print(f"The winner is {fighter2.name}")
+        print("You have died.")
+        print("Thank you for playing Fantasy Simulator!")
 
-def create_character(divider):
+def create_character():
     random_stats = get_starting_stats()
     name = input("Character Name: ")
     while name == "":
@@ -133,14 +117,5 @@ def create_character(divider):
             char = Warrior(name, random_stats, [starting_skill])
     
     return char
-     
-def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
-    print(prompt)
-    while True:
-        user_input = input()
-        if user_input in valid_inputs:
-            return user_input
-        else:
-            print(reprompt)
 
 main()
