@@ -16,7 +16,7 @@ class Character():
         self.constitution = stats[2]
         self.wisdom = stats[3]
         self.luck = stats[4]
-        self.exp = 0
+        self.exp = 100
         self.level = 1
 
         # Calculating Health/Mana based on stats:
@@ -75,8 +75,8 @@ class Character():
         # For debugging character creation
         return f"""Name: {self.name}, Strength: {self.strength}, Agility: {self.agility}, \
 Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHead Slot: {self.head_armor.name}, \
-    Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.armor}, Magic Resist: {self.magic_resist} \
-    \nSkills: {self.skills}, Spells: {self.spells}"""
+Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.armor}, Magic Resist: {self.magic_resist} \
+\nSkills: {self.skills}, Spells: {self.spells}"""
     
     def equip_item(self, equipment: Equipment):
         # equipment class must be used.
@@ -147,6 +147,7 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
             exp_needed += i * 100
         self.exp = exp_needed
         print(f"Congratulations! {self.name} has reached level {self.level}!")
+        print(divider)
         
         if self.level % 5 == 0:
             self.add_stats(6) #double points every 5th level
@@ -216,7 +217,7 @@ Constitution: {self.constitution}, Wisdom: {self.wisdom}, Luck: {self.luck},\nHe
         self.spells.append(spell)
 
 class Enemy(Character):
-    def __init__(self, name, stats, level = 1, growth = 1):
+    def __init__(self, name, stats, level = 1, growth = 1, base_exp = 20):
         #level is for scaling monsters, growth is for stat points per level (in each stat)
         super().__init__(name, stats)
         self.growth = growth
@@ -224,6 +225,8 @@ class Enemy(Character):
         if level > 1:
             for i in range(self.level, level + 1):
                 self.level_up_enemy()
+
+        self.exp = (base_exp * 2 * growth) + (self.level * base_exp)
 
     def __str__(self):
         return f"Name: {self.name} Level: {self.level} Health: {self.health}"
@@ -247,3 +250,6 @@ class Enemy(Character):
         self.constitution += per_level
         self.wisdom += per_level
         self.luck += per_level
+
+    def give_exp(self, player: Character):
+        player.gain_exp(self.exp)

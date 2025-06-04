@@ -1,4 +1,8 @@
 import random
+from equipment import Equipment
+from Constants import *
+
+
 divider = "--------------------------------------------------------"
 
 def get_starting_stats(points=45):
@@ -34,3 +38,4 @@ def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid optio
             return user_input
         else:
             print(reprompt)
+

@@ -6,6 +6,7 @@ from archer import *
 from Warrior import *
 from Mage import *
 from Menus import *
+from dungeon import *
 
 # Stats MUST be in the following order:
 # [Strength, Agility, Constitution, Wisdom, Luck]
@@ -15,30 +16,28 @@ def main():
     print("Welcome to Fantasy Simulator".center(54))
     print(divider)
 
-    char = create_character()
+    player = create_character()
 
-    print(f"Summary:\n{char}\nInventory:\n{char.invent}")
-
+    print(f"Summary:\n{player}\nInventory:\n{player.invent}")
 
     print(divider)
-    enemy_list = []
-    for i in range(5):
-        random_level = random.randint(1,5)
-        growth = 3
-        stats = get_starting_stats(30)
-        enemy = Enemy(f"Enemy {i+1}", stats, random_level, growth)
-        enemy_list.append(enemy)
 
-    for enemy in enemy_list:
-        print(enemy)
-    """
-    print("These are some long odds...")
-    print("Wait! Whats that?")
+    for i in range(0, 6):
+        exp = 1.5 * player.exp
+        player.gain_exp(exp)
 
-    godsword = Equipment("Game-maker's Wrath", "weapon", 50, 50, 750, 750)
-    char.equip_item(godsword)
-    """
-    battle(char, enemy_list)
+    dungeon = create_dungeon(player)
+
+  
+
+    print(dungeon)
+    print(divider)
+    for floor in dungeon.floors:
+        print(floor)
+        print(divider)
+        for room in floor.rooms:
+            print(room)
+            print(divider)
 
 
 def battle(player: Character, enemies: list):
@@ -144,5 +143,20 @@ def create_character():
             char = Warrior(name, random_stats, [starting_skill])
     
     return char
+
+def create_dungeon(player):
+    type = random.choice(dungeon_types)
+    info_list = dungeon_type_info[type]
+
+    if player.level <= 4:
+        floors = 1
+    elif 4 < player.level <= 9:
+        floors = 2
+    elif 9 < player.level <= 20:
+        floors = 3
+    else:
+        floors = 4 
+
+    return Dungeon(type, floors, 1, info_list, 3)
 
 main()

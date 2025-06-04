@@ -1,8 +1,8 @@
 import random
-from characters import *
-from archer import *
-from Warrior import *
-from Mage import *
+from characters import Character, Enemy
+from archer import Archer
+from Warrior import Warrior
+from Mage import Mage
 from random_functions import *
 
 def target_selection_menu(enemies: list):
@@ -121,3 +121,13 @@ def main_combat_menu(player: Character, enemies: list):
             
             case "4": #Flee
                 return 1
+            
+def main_menu(player: Character):
+    pass
+
+def shop_menu(player: Character):
+    pass
+
+def use_item_menu(player: Character):
+    pass
+
