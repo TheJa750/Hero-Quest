@@ -1,8 +1,5 @@
 import random
 from characters import Character, Enemy
-from archer import Archer
-from Warrior import Warrior
-from Mage import Mage
 from random_functions import *
 
 def target_selection_menu(enemies: list):
@@ -103,7 +100,7 @@ def main_combat_menu(player: Character, enemies: list):
                 target_str = target_selection_menu(enemies)
                 if target_str != "0":
                     target = enemies[int(target_str)-1]
-                    if player is Archer:
+                    if player.sytle == "Archer":
                         player.basic_shot(target)
                     else:
                         player.melee_strike(target)

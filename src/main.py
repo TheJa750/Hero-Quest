@@ -2,9 +2,6 @@ import random, time
 from characters import *
 from equipment import *
 from random_functions import *
-from archer import *
-from Warrior import *
-from Mage import *
 from Menus import *
 from dungeon import *
 
@@ -104,7 +101,7 @@ def create_character():
                 case _:
                     starting_spell = "Shadow Fangs"
 
-            char = Mage(name, random_stats, [starting_spell])
+            char = Character(name, random_stats, style = "Mage", skills= [], spells=[starting_spell])
         
         case "2": #Archer
             char_type = "Archer"
@@ -121,7 +118,7 @@ def create_character():
                 case _:
                     starting_skill = "Piercing Shot"
 
-            char = Archer(name, random_stats, [starting_skill])
+            char = Character(name, random_stats, style="Archer", skills=[starting_skill])
 
         case _: #Warrior
             char_type = "Warrior"
@@ -140,7 +137,7 @@ def create_character():
                 case _:
                     starting_skill = "Fury of Blows"
 
-            char = Warrior(name, random_stats, [starting_skill])
+            char = Character(name, random_stats, style="Warrior", skills=[starting_skill])
     
     return char
 

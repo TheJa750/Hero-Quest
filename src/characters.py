@@ -6,11 +6,12 @@ equipment_slot_body = "body"
 equipment_slot_wep = "weapon"
 
 class Character():
-    def __init__(self, name, stats):
+    def __init__(self, name, stats, style = "Monster", skills = [], spells = []):
         # Creates a character object given a name and a list of stats
         # List MUST be in the following order:
         # [Strength, Agility, Constitution, Wisdom, Luck]
         self.name = name
+        self.sytle = style
         self.strength = stats[0]
         self.agility = stats[1]
         self.constitution = stats[2]
@@ -52,6 +53,41 @@ class Character():
                        "HEALTH POTIONS": 0,
                        "MANA POTIONS": 0
                        }
+        
+        match self.sytle:
+            case "Archer":
+                for skill in skills:
+                    self.skills.append(skill)
+
+                self.invent["ARROWS"] = 500
+
+                starting_gear = [Equipment("Starter's Bow", equipment_slot_wep, 0, 0, 15, 0),
+                                ]
+                
+                for gear in starting_gear:
+                    self.equip_item(gear)
+
+            case "Mage":
+                for spell in spells:
+                    self.spells.append(spell)
+
+                starting_gear = [Equipment("Starter's Wand", equipment_slot_wep, 0, 2, 5, 10),
+                                Equipment("Dusty Hat", equipment_slot_head, 1, 2, 0, 1)]
+                
+                for gear in starting_gear:
+                    self.equip_item(gear)
+
+            case "Warrior":
+                for skill in skills:
+                    self.skills.append(skill)
+
+                starting_gear = [Equipment("Starter's Sword", equipment_slot_wep, 1, -1, 10, 0),
+                                Equipment("Loose Chainmail", equipment_slot_body, 3, 0, 0, 0)]
+                
+                for gear in starting_gear:
+                    self.equip_item(gear)
+            case "Monster":
+                return
 
     def take_damage(self, damage, dmg_type):
         # Pretty self explanatory, takes damage based on damage type and armor
@@ -215,6 +251,132 @@ Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.arm
 
     def learn_spell(self, spell: str):
         self.spells.append(spell)
+
+    def cleave(self, target1, target2 = None, target3 = None):
+        #Targets up to 3 enemies target1 is main target and gets full damage, target2/3 get 75% damage
+        dmg = max(1, self.phys_damage)
+        print(f"{self.name} cleaves {target1.name}.")
+        target1.take_damage(dmg, "physical")
+
+        if target2 and target3:
+            print(f"The sweep hits {target2.name} and {target3.name}.")
+            target2.take_damage(round(0.75 * dmg), "physical")
+            target3.take_damage(round(0.75 * dmg), "physical")
+        elif target2:
+            print(f"The sweep hits {target2.name}.")
+            target2.take_damage(round(0.75 * dmg), "physical")
+        elif target3:
+            print(f"The sweep hits {target3.name}.")
+            target3.take_damage(round(0.75 * dmg), "physical")
+        else:
+            print("No other targets in range.")
+
+        return True
+
+    def devastating_strike(self, target):
+        #Deals true damage
+        dmg = max(1, self.phys_damage)
+        print(f"{self.name} lands a powerful blow on {target.name}.")
+        target.take_damage(dmg, "true")
+
+        return True
+
+    def fury_of_blows(self, target):
+        #Attacks a random number of times (2-5 inclusive), each for 50% damage
+        num_attacks = random.randint(2,5)
+        dmg = max(1, 0.5 * self.phys_damage)
+        print(f"{self.name} quickly attacks {target.name} {num_attacks} times.")
+        for i in range(0, num_attacks):
+            target.take_damage(round(dmg), "physical")
+        return True
+
+    def basic_shot(self, target,dmg_mod = 1.0, dmg_type = "physical"):
+        if self.invent['ARROWS'] > 0:
+            print(f"{self.name} shoots {target.name}.")
+            self.invent['ARROWS'] -= 1
+            target.take_damage(round(dmg_mod * self.phys_damage), dmg_type)
+            print(f"Arrows remaining: {self.invent['ARROWS']}.")
+        else:
+            print("Not enough arrows!")
+            self.melee_strike(target)
+
+    def double_shot(self, target):
+        # Fires 2 arrows back to back, the second one has a 70% chance to hit for 75% of base damage
+        print(f"{self.name} uses Double Shot to attack {target.name}.")
+        self.basic_shot(target)
+        hit_chance = random.randint(0, 100)
+        if hit_chance >= 30:
+            self.basic_shot(target, 0.75)
+        else:
+            print(f"{self.name}'s 2nd shot misses.")
+        return True
+
+    def piercing_shot(self, target):
+        #Fires a shot that ignores armor
+        print(f"{self.name} uses Piercing Shot to attack {target.name}.")
+        self.basic_shot(target, dmg_type="true")
+        return True
+
+    def cast_fireball(self, target):
+        print(f"{self.name} attempts to cast Fireball at {target.name}.")
+        base_dmg = 50
+        mana_cost = 25
+        if self.mana - mana_cost >= 0:
+            self.mana -= mana_cost
+            damage = round(base_dmg + (self.wisdom * 5) + self.mage_damage)
+            print(f"Fireball hits {target.name}.")
+            target.take_damage(damage, "magical")
+            
+            return True
+        else:
+            print(f"{self.name} has insufficient mana to cast Fireball.")
+            return False
+    
+    def cast_chain_lightning(self, target1, target2 = None, target3 = None):
+        #Lightning spell that chains to nearby enemies
+        print(f"{self.name} attempts to cast Chain Lightning at {target1.name}.")
+        base_dmg = 30
+        mana_cost = 30
+        if self.mana - mana_cost >= 0:
+            self.mana -= mana_cost
+            dmg = round(base_dmg + (self.wisdom * 2.5) + self.mage_damage)
+            print(f"Chain Lightning hits {target1.name}.")
+            target1.take_damage(dmg, "magical")
+            
+            if target2 and target3:
+                print(f"The lightning arcs to {target2.name} and {target3.name}.")
+                target2.take_damage(dmg, "magical")
+                target3.take_damage(dmg, "magical")
+            elif target2:
+                print(f"The lightning arcs to {target2.name}.")
+                target2.take_damage(dmg, "magical")
+            elif target3:
+                print(f"The lightning arcs to {target3.name}.")
+                target3.take_damage(dmg, "magical")
+            else:
+                print("No other targets in range.")
+
+            return True
+        else:
+            print(f"{self.name} has insufficient mana to cast Chain Lightning.")
+            return False
+        
+    def cast_shadow_fangs(self, target):
+        # Shadow Fangs - strikes target twice, each one gets offensive bonuses to damage, but also defensive reduction to damage.
+        print(f"{self.name} attempts to cast Shadow Fangs at {target.name}.")
+        base_dmg = 20
+        mana_cost = 20
+        if self.mana - mana_cost >= 0:
+            self.mana -= mana_cost
+            damage = round(base_dmg + (self.wisdom * 2.5) + self.mage_damage)
+            print(f"Shadow Fangs hits {target.name}.")
+            target.take_damage(damage, "magical")
+            print(f"Shadow Fangs hits {target.name}.")
+            target.take_damage(damage, "magical")
+            return True
+        else:
+            print(f"{self.name} has insufficient mana to cast Shadow Fangs.")
+            return False
 
 class Enemy(Character):
     def __init__(self, name, stats, level = 1, growth = 1, base_exp = 20):
