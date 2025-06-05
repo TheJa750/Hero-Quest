@@ -19,23 +19,13 @@ def main():
 
     print(divider)
 
-    for i in range(0, 6):
-        exp = 1.5 * player.exp
-        player.gain_exp(exp)
+    while True:
+        keep_playing = main_menu(player)
 
-    dungeon = create_dungeon(player)
+        if not keep_playing:
+            break
 
-  
-
-    print(dungeon)
-    print(divider)
-    for floor in dungeon.floors:
-        print(floor)
-        print(divider)
-        for room in floor.rooms:
-            print(room)
-            print(divider)
-
+        
 
 def battle(player: Character, enemies: list):
     #Need some logic determining battle order, for now player will always go first so that I can make the battle loop work

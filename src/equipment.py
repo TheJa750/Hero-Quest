@@ -17,5 +17,12 @@ class Equipment():
             Physical Damage: {self.phys_damage}\n\
             Magical Damage: {self.mage_damage}"
     
+    def compare_equipment(self, other):
+        print("Equipped vs. New")
+        print(f"Armor: {self.armor} vs. {other.armor}")
+        print(f"Magic Resist: {self.mr} vs. {other.mr}")
+        print(f"Phyiscal Damage: {self.phys_damage} vs. {other.phys_damage}")
+        print(f"Magical Damage: {self.mage_damage} vs. {other.mage_damage}")
+    
 def create_new_equipment(player, game_stage):
     pass

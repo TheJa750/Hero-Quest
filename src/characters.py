@@ -1,9 +1,6 @@
 import random
 from equipment import *
 from random_functions import *
-equipment_slot_head = "head"
-equipment_slot_body = "body"
-equipment_slot_wep = "weapon"
 
 class Character():
     def __init__(self, name, stats, style = "Monster", skills = [], spells = []):
@@ -50,8 +47,8 @@ class Character():
 
         # Creating starting invetory shared by all types:
         self.invent = {"COINS": 100,
-                       "HEALTH POTIONS": 0,
-                       "MANA POTIONS": 0
+                       "HEALTH POTION(S)": 0,
+                       "MANA POTION(S)": 0
                        }
         
         match self.sytle:

@@ -2,7 +2,9 @@ import random
 from equipment import Equipment
 from Constants import *
 
-
+equipment_slot_head = "head"
+equipment_slot_body = "body"
+equipment_slot_wep = "weapon"
 divider = "--------------------------------------------------------"
 
 def get_starting_stats(points=45):

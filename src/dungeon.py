@@ -1,6 +1,6 @@
 import random
 from characters import Character, Enemy
-from Menus import *
+from random_functions import get_starting_stats
 
 class Dungeon():
     def __init__(self, name: str, num_floors: int, difficulty: int, info: list, player_lvl: int, rooms_per_floor = 2):
