@@ -1,3 +1,6 @@
 __pycache__/
 misc_useless.py
 gui.py
+archer.py
+Mage.py
+Warrior.py

@@ -1,6 +1,7 @@
 import random
-from characters import Character
+from characters import Character, skills, spells
 from random_functions import *
+from equipment import create_new_equipment, Equipment
 
 def target_selection_menu(enemies: list):
     i = 1
@@ -100,7 +101,7 @@ def main_combat_menu(player: Character, enemies: list):
                 target_str = target_selection_menu(enemies)
                 if target_str != "0":
                     target = enemies[int(target_str)-1]
-                    if player.sytle == "Archer":
+                    if player.style == "Archer":
                         player.basic_shot(target)
                     else:
                         player.melee_strike(target)
@@ -153,13 +154,88 @@ def main_menu(player: Character):
                 return False
 
 def shop_menu(player: Character):
-    pass
+    print("Welcome to the Fantasy Shop!")
+    print("Can I interest you in any of our fine wares?")
+
+    num_equip = random.randint(int(round(player.luck/7)), int(round(player.luck)/3))
+    
+    items = [
+        "HEALTH POTION(S)",
+        "MANA POTION(S)"
+    ]
+
+    prices = {
+        "HEALTH POTION(S)": 50,
+        "MANA POTION(S)": 50
+    }
+
+    equip = []
+
+    for i in range(num_equip):
+        item = create_new_equipment(player)
+        items.append(item.name)
+        price = (5 * (item.armor + item.mr)) + (2 * (item.phys_damage + item.mage_damage))
+        prices[item.name] = price
+        equip.append(item)
+
+    prompt = ["0 = Back"]
+    valid = ["0"]
+
+    for i in range(len(items)):
+        prompt.append(f"{i+1} = {items[i]}")
+        valid.append(f"{i+1}")
+
+    choice = items[int(validate_input("\n".join(prompt), valid)) - 1]
+    equip_names = []
+
+    for i in range(len(equip)):
+        equip_names.append(equip[i].name)
+
+    cost = prices[choice]
+    money = player.invent["COINS"]
+
+    while True:
+        if choice in equip_names:
+            index = equip_names.index(choice)
+            comp = equip[index]
+            slot = comp.slot
+            if slot == "head":
+                player.head_armor.compare_equipment(comp)
+            elif slot == "body":
+                player.body_armor.compare_equipment(comp)
+            else:
+                player.weapon.compare_equipment(comp)
+            print(f"{comp.name} will cost {cost} coins.")
+            if user_yes_no_check(comp.name, "buy"):
+                break
+            else:
+                return
+        else:
+            break
+
+    if money < cost:
+        print("Insufficient funds, please come back richer.")
+        return
+    
+    player.invent["COINS"] -= cost
+    
+    if not (choice in equip_names):
+        if choice in player.invent.keys():
+            player.invent[choice] += 1
+        else:
+            player.invent[choice] = 1
+    else:
+        index = equip_names.index(choice)
+        player.invent[choice] = equip[index]
+
+    print(f"{player.name} pays {cost} coins to the cashier.")
+    print(f"{choice} has been added to inventory.")
+    return
 
 def use_item_menu(player: Character, item_key):
-    if isinstance(player.invent[item_key], Equipment):
-        item = player.invent[item_key]
-
-        slot = item.slot # type: ignore
+    item = player.invent[item_key]
+    if isinstance(item, Equipment):
+        slot = item.slot
 
         match slot:
             case "head":
@@ -169,30 +245,59 @@ def use_item_menu(player: Character, item_key):
             case "weapon":
                 player.weapon.compare_equipment(item)
 
-        prompt = "Would you like to equip this item?\n1 = Yes\n2 = No"
-        choice = validate_input(prompt, ["1", "2"])
-
-        if choice == "2":
-            return
+        if user_yes_no_check(item.name, "equip"): 
+            player.equip_item(item)
         else:
-            player.equip_item(item) # type: ignore
+            return
 
     else:
         item = item_key
         quantity = player.invent[item_key]
 
         if item == "HEALTH POTION(S)":
-            #use the health potion (y/n)
-            pass
+            if quantity > 0:
+                if user_yes_no_check(item, "use"):
+                    player.invent[item] -= 1
+                    player.health = player.max_health
+                    print("Drinking health potion...")
+                    print(f"Health recovered! {player.name} now has {player.health} health.")
         elif item == "MANA POTION(S)":
-            #use the mana potion (y/n)
-            pass
+            if quantity > 0:
+                if user_yes_no_check(item, "use"):
+                    player.invent[item] -= 1
+                    player.mana = player.max_mana
+                    print("Drinking mana potion...")
+                    print(f"Mana recovered! {player.name} now has {player.mana} mana.")
         elif "SPELLBOOK" in item:
-            #use the spell book (y/n)
-            pass
+            spell_list = spells.copy()
+            if quantity > 0:
+                if user_yes_no_check(item, "use"):
+                    player.invent[item] -= 1
+                    for spell in player.spells:
+                        spell_list.remove(spell) 
+                    new_spell = random.choice(spell_list)
+                    player.spells.append(new_spell)
         elif "SKILLBOOK" in item:
-            #use the skill book (y/n)
-            pass
+            skill_list = skills.copy()
+            if quantity > 0:
+                if user_yes_no_check(item, "use"):
+                    player.invent[item] -= 1
+                    for skill in player.skills:
+                        skill_list.remove(skill) 
+                    new_skill = random.choice(skill_list)
+                    player.spells.append(new_skill)
         elif item == "COINS":
             print("Lovely money!")
-            return
+        else:
+            print("I wonder what I can do with this... Maybe I can sell it?")
+        
+        return
+        
+def user_yes_no_check(item, function: str):
+    prompt = f"Would you like to {function} {item}?\n1 = Yes\n2 = No"
+    choice = validate_input(prompt, ["1", "2"])
+
+    if choice == "1":
+        return True
+    else:
+        return False

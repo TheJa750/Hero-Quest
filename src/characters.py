@@ -2,13 +2,16 @@ import random
 from equipment import *
 from random_functions import *
 
+spells = ["Fireball", "Chain Lightning", "Shadow Fangs"]
+skills = ["Double Shot", "Piercing Shot", "Cleave", "Devastating Blow", "Fury of Blows"]
+
 class Character():
     def __init__(self, name, stats, style = "Monster", skills = [], spells = []):
         # Creates a character object given a name and a list of stats
         # List MUST be in the following order:
         # [Strength, Agility, Constitution, Wisdom, Luck]
         self.name = name
-        self.sytle = style
+        self.style = style
         self.strength = stats[0]
         self.agility = stats[1]
         self.constitution = stats[2]
@@ -51,7 +54,7 @@ class Character():
                        "MANA POTION(S)": 0
                        }
         
-        match self.sytle:
+        match self.style:
             case "Archer":
                 for skill in skills:
                     self.skills.append(skill)
@@ -152,6 +155,9 @@ Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.arm
             self.mage_damage -= old_equip.mage_damage
             temp_dict = {old_equip.name: old_equip}
             self.invent.update(temp_dict)
+
+        if equipment.name in self.invent.keys():
+            self.invent.pop(equipment.name)
     
     def melee_strike(self, target):
         # Calculating melee damage
