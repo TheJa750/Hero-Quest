@@ -1,24 +1,5 @@
 import random
-
-prename_modifiers = [
-    "Lucky",
-    "Rusty",
-    "Dull",
-    "Legendary",
-    "Dangerous",
-    "Mystical",
-    "Curved"
-]
-
-postname_modifiers = [
-    "Reaping",
-    "Distinction",
-    "Dark Magic",
-    "Whittling",
-    "Isolation",
-    "Desolation",
-    "Abomination"
-]
+from Constants import *
 
 class Equipment():
     def __init__(self, name, slot, armor, mr, melee_damage, mage_dmg):

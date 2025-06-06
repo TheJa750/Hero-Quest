@@ -75,15 +75,53 @@ tower_info.append(tower_basic)
 tower_info.append(tower_bosses)
 
 dungeon_types = [
-    "Dwarven",
-    "Undead",
+    "Dwarven City",
+    "Undead Lair",
     "Forest",
     "Tower"
 ]
 
 dungeon_type_info = {
-    "Dwarven" : dwarven_info,
-    "Undead" : undead_info,
+    "Dwarven City" : dwarven_info,
+    "Undead Lair" : undead_info,
     "Forest" : forest_info,
     "Tower" : tower_info
 }
+
+equipment_slot_head = "head"
+equipment_slot_body = "body"
+equipment_slot_wep = "weapon"
+divider = "--------------------------------------------------------"
+
+spells = ["Fireball", "Chain Lightning", "Shadow Fangs"]
+skills = ["Double Shot", "Piercing Shot", "Cleave", "Devastating Blow", "Fury of Blows"]
+
+prename_modifiers = [
+    "Lucky",
+    "Rusty",
+    "Dull",
+    "Legendary",
+    "Dangerous",
+    "Mystical",
+    "Curved"
+]
+
+postname_modifiers = [
+    "Reaping",
+    "Distinction",
+    "Dark Magic",
+    "Whittling",
+    "Isolation",
+    "Desolation",
+    "Abomination"
+]
+
+def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
+    print(divider)
+    print(prompt)
+    while True:
+        user_input = input()
+        if user_input in valid_inputs:
+            return user_input
+        else:
+            print(reprompt)

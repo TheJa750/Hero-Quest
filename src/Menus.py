@@ -1,7 +1,9 @@
-import random
-from characters import Character, skills, spells
-from random_functions import *
+import random, time
+from player import Player
+from dungeon import Dungeon, Room
 from equipment import create_new_equipment, Equipment
+from Constants import *
+from Enemy import Enemy
 
 def target_selection_menu(enemies: list):
     i = 1
@@ -16,7 +18,7 @@ def target_selection_menu(enemies: list):
 
     return target
 
-def skills_menu(player: Character,enemies: list):
+def skills_menu(player: Player,enemies: list):
     splash_skills = ["cleave"]
     while True:
         strings = ["Available Skills:", "0 = Back"]
@@ -53,7 +55,7 @@ def skills_menu(player: Character,enemies: list):
                 else:
                     return False
 
-def spells_menu(player: Character,enemies: list):
+def spells_menu(player: Player,enemies: list):
     splash_spells = ["cast_chain_lightning"]
     while True:
         strings = ["Available Spells:", "0 = Back"]
@@ -90,7 +92,7 @@ def spells_menu(player: Character,enemies: list):
                 else:
                     return False
 
-def main_combat_menu(player: Character, enemies: list):
+def main_combat_menu(player: Player, enemies: list):
     while True:
         prompt = ("1 = Basic Attack\n2 = Skills\n3 = Spells\n4 = Flee")
         valid_inputs = ["1", "2", "3", "4"]
@@ -120,7 +122,7 @@ def main_combat_menu(player: Character, enemies: list):
             case "4": #Flee
                 return 1
             
-def main_menu(player: Character):
+def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
     while True:
         prompt = ("1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Exit")
         valid_inputs = ["1", "2", "3", "4"]
@@ -128,8 +130,7 @@ def main_menu(player: Character):
 
         match choice:
             case "1":
-                #Need some dungeon menu to call here
-                return True
+                return dungeon_menu(player, current_dungeon)
             case "2":
                 print(f"Inventory: {player.invent}")
                 print(divider)
@@ -148,25 +149,25 @@ def main_menu(player: Character):
                 return True
 
             case "3":
-                shop_menu(player)
+                shop_menu(player, current_shop)
                 return True
             case "4":
                 return False
 
-def shop_menu(player: Character):
+def shop_menu(player: Player, shop):
     print("Welcome to the Fantasy Shop!")
     print("Can I interest you in any of our fine wares?")
 
     num_equip = random.randint(int(round(player.luck/7)), int(round(player.luck)/3))
     
     items = [
-        "HEALTH POTION(S)",
-        "MANA POTION(S)"
+        "HEALTH POTION",
+        "MANA POTION"
     ]
 
     prices = {
-        "HEALTH POTION(S)": 50,
-        "MANA POTION(S)": 50
+        "HEALTH POTION": 50,
+        "MANA POTION": 50
     }
 
     equip = []
@@ -232,7 +233,7 @@ def shop_menu(player: Character):
     print(f"{choice} has been added to inventory.")
     return
 
-def use_item_menu(player: Character, item_key):
+def use_item_menu(player: Player, item_key):
     item = player.invent[item_key]
     if isinstance(item, Equipment):
         slot = item.slot
@@ -254,14 +255,14 @@ def use_item_menu(player: Character, item_key):
         item = item_key
         quantity = player.invent[item_key]
 
-        if item == "HEALTH POTION(S)":
+        if item == "HEALTH POTION":
             if quantity > 0:
                 if user_yes_no_check(item, "use"):
                     player.invent[item] -= 1
                     player.health = player.max_health
                     print("Drinking health potion...")
                     print(f"Health recovered! {player.name} now has {player.health} health.")
-        elif item == "MANA POTION(S)":
+        elif item == "MANA POTION":
             if quantity > 0:
                 if user_yes_no_check(item, "use"):
                     player.invent[item] -= 1
@@ -301,3 +302,66 @@ def user_yes_no_check(item, function: str):
         return True
     else:
         return False
+    
+def dungeon_menu(player: Player, dungeon: Dungeon):
+    print(dungeon)
+
+    if not user_yes_no_check(dungeon.name, "explore"):
+        return True
+    
+    keep_exploring = True
+
+    while keep_exploring:
+        room = dungeon.next_room() #type: Room | str
+        print(divider)
+        
+
+        if isinstance(room, str): #Only type str when dungeon complete, returns to main menu to begin new loop
+            print(room)
+            return True
+        
+        print(repr(room))
+        action_code = battle(player, room.enemies)
+
+        match action_code:
+            case 0:
+                pass
+            case 1: #Flee, return room to dungeon -> floor 0 -> room 0 then return to main menu with True (continue playing)
+                dungeon.floors[0].rooms.insert(0, room)
+                return True
+            case 2: #player has died return to main menu with False (stop playing)
+                player.death()
+                return False
+        
+        keep_exploring = user_yes_no_check(dungeon.name, "explore")
+
+    return True
+            
+def battle(player: Player, enemies: list[Enemy]):
+    #Need some logic determining battle order, for now player will always go first so that I can make the battle loop work
+    
+    #Main battle loop, if player is alive and at least 1 enemy is alive battle continues
+    while player.health > 0 and len(enemies) > 0:
+
+
+        action_code = main_combat_menu(player, enemies)
+        print(divider)
+
+        if action_code != 0:
+            print(f"{player.name} has fled succesfully.")
+            return 1
+
+        for enemy in enemies:
+            if enemy.health <= 0:
+                enemy.death(player)
+                enemies.remove(enemy)
+
+        if len(enemies) > 0:
+            for enemy in enemies:
+                time.sleep(0.25)
+                enemy.melee_strike(player)
+                print(divider)
+                if player.health <= 0:
+                    return 2
+
+    return 0
