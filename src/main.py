@@ -17,11 +17,7 @@ def main():
 
     print(divider)
     dungeon = create_dungeon(player)
-    shop = Shop(
-        ["HEALTH POTION", "MANA POTION"],
-        {"HEALTH POTION": 50, "MANA POTION": 50},
-        []
-    )
+    shop = Shop(2.5, player)
 
     keep_playing = True
 

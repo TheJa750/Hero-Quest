@@ -1,5 +1,6 @@
 from equipment import *
 from Constants import *
+from shop import Item
 
 class Character():
     def __init__(self, name, stats):
@@ -40,7 +41,7 @@ class Character():
         self.mage_damage += self.head_armor.mage_damage + self.body_armor.mage_damage + self.weapon.mage_damage
 
         # Creating starting invetory shared by all types:
-        self.invent = dict()
+        self.invent = []
         
     def take_damage(self, damage, dmg_type):
         # Pretty self explanatory, takes damage based on damage type and armor
@@ -105,11 +106,8 @@ Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.arm
             self.magic_resist -= old_equip.mr
             self.phys_damage -= old_equip.phys_damage
             self.mage_damage -= old_equip.mage_damage
-            temp_dict = {old_equip.name: old_equip}
-            self.invent.update(temp_dict)
-
-        if equipment.name in self.invent.keys():
-            self.invent.pop(equipment.name)
+            temp = Item(old_equip)
+            self.invent.append(temp)
     
     def melee_strike(self, target):
         # Calculating melee damage

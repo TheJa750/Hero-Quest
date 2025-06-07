@@ -4,7 +4,7 @@ from characters import get_starting_stats
 from Constants import *
 
 class Dungeon():
-    def __init__(self, name: str, num_floors: int, difficulty: int, info: list, player_lvl: int, rooms_per_floor = 2):
+    def __init__(self, name: str, num_floors: int, difficulty: int, info: list, player_lvl: int, rooms_per_floor = 3):
         self.name = name
         self.floors = []
         self.diff = difficulty
@@ -134,7 +134,7 @@ class Room():
         else:
             stats = get_starting_stats(difficulty * scaling * 10)
             growth = 1
-            base_exp = 20
+            base_exp = 15
 
         return Enemy(name, stats, level, growth, base_exp)
 

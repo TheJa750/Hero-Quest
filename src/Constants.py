@@ -93,7 +93,7 @@ equipment_slot_body = "body"
 equipment_slot_wep = "weapon"
 divider = "--------------------------------------------------------"
 
-spells = ["Fireball", "Chain Lightning", "Shadow Fangs"]
+spells = ["Fireball", "Chain Lightning", "Shadow Fangs", "Heal"]
 skills = ["Double Shot", "Piercing Shot", "Cleave", "Devastating Blow", "Fury of Blows"]
 
 prename_modifiers = [

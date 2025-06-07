@@ -1,13 +1,11 @@
 import random, time
-from equipment import Equipment, create_new_equipment
 from Constants import *
 from player import Player
 from Enemy import Enemy
 from dungeon import Dungeon
-from Menus import main_combat_menu
 from characters import get_starting_stats
 
-def create_dungeon(player):
+def create_dungeon(player: Player):
     type = random.choice(dungeon_types)
     info_list = dungeon_type_info[type]
 
@@ -20,7 +18,7 @@ def create_dungeon(player):
     else:
         floors = 4 
 
-    return Dungeon(type, floors, 1, info_list, 3)
+    return Dungeon(type, floors, 1, info_list, player.level)
 
 def create_character():
     random_stats = get_starting_stats()

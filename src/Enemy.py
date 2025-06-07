@@ -1,7 +1,8 @@
 import random
 from characters import Character
-from equipment import Equipment
+from equipment import Equipment, create_new_equipment
 from player import Player
+from shop import Item
 
 equipment_slot_head = "head"
 equipment_slot_body = "body"
@@ -43,20 +44,48 @@ class Enemy(Character):
         self.luck += per_level
 
     def create_random_loot(self, player: Player):
-        loot = {"item": 1}
-        return loot
+        luck_mod = 1 + round(player.luck / 10)
+        loot = []
+
+        item_list = [
+            "HEALTH POTION", "MANA POTION",
+            "SPELLBOOK", "SKILLBOOK", "DUSTY TOME",
+            "CLOTH", "COINS", "RING", "NECKLACE" 
+        ]
+        weights = [5, 5, 2, 2, 25, 25, 50, 1, 1]
+
+        num_rolls = random.randint(1, luck_mod)
+
+        equip_roll = random.randint(0, 300)
+
+        if 5 + player.luck >= equip_roll:
+            item = Item(create_new_equipment(player))
+            loot.append(item)
+        else:
+            items = random.choices(item_list, weights, k=num_rolls)
+            for item in items:
+                match item:
+                    case "COINS":
+                        modifier = self.level + (2 * self.growth)
+                        quantity = random.randint(25, 25 * modifier)
+                    case "CLOTH", "DUSTY TOME":
+                        modifier = self.level + (2 * self.growth)
+                        quantity = random.randint(2, 2 + modifier)
+                    case _:
+                        quantity = 1
+                for obj in loot:
+                    if obj.name == item:
+                        obj.quantity += quantity
+                    else:
+                        loot.append(Item(item, quantity))
+
+        return loot #type: list[Item]
 
     def death(self, player: Player):
-        print(f"{player.name} gains {self.exp} from slaying {self.name}.")
+        print(f"{player.name} gains {self.exp} exp from slaying {self.name}.")
         player.gain_exp(self.exp)
-        loot = self.create_random_loot(player) #dictionary [str, int] OR [str, Equipment]
+        loot = self.create_random_loot(player) #list of Item objects
 
         #loop to add to player invent and print loot message
-        for item_key in loot:
-            item = loot[item_key]
-            if isinstance(item, Equipment):
-                player.invent[item.name] = item
-                print(f"{item_key} has been added to {player.name}'s inventory.")
-            else:
-                player.invent[item_key] = item
-                print(f"{item_key} x {item} has been added to {player.name}'s inventory.")
+        for obj in loot:
+            player.add_to_invent(obj)

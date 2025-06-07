@@ -3,6 +3,13 @@ from characters import Character
 from equipment import Equipment
 from random_functions import validate_input
 from Constants import *
+from item import Item
+
+starting_items = [
+    Item("COINS", 100),
+    Item("HEALTH POTION"),
+    Item("MANA POTION")
+]
 
 class Player(Character):
     def __init__(self, name, stats, style, skills = [], spells = []):
@@ -13,16 +20,15 @@ class Player(Character):
         self.skills = []
         self.spells = []
 
-        self.invent["COINS"] = 100
-        self.invent["HEALTH POTION"] = 1
-        self.invent["MANA POTION"] = 1
+        for item in starting_items:
+            self.add_to_invent(item)
 
         match self.style:
             case "Archer":
                 for skill in skills:
                     self.skills.append(skill)
 
-                self.invent["ARROWS"] = 500
+                self.add_to_invent(Item("ARROWS", 500))
 
                 starting_gear = [Equipment("Starter's Bow", equipment_slot_wep, 0, 0, 15, 0),
                                 ]
@@ -49,7 +55,28 @@ class Player(Character):
                 
                 for gear in starting_gear:
                     self.equip_item(gear)
-        
+
+    def add_to_invent(self, item: Item):
+        exists, index = self.check_for_item(item.name)
+        if exists:
+            self.invent[index].quantity += item.quantity
+        else:
+            self.invent.append(item)
+
+    def check_for_item(self, item_name: str):
+        exists = False
+        index = -1
+        for obj in self.invent:
+            if obj == item_name:
+                index = self.invent.index(obj)
+                exists = True
+        return exists, index 
+    
+    def get_item(self, item_name: str):
+        exists, index = self.check_for_item(item_name)
+        if exists:
+            return self.invent[index] #type: Item
+
     def gain_exp(self, exp_amount):
         #exp will be amount needed to reach next level.
         if exp_amount >= self.exp:
@@ -132,9 +159,11 @@ class Player(Character):
             return
         
     def learn_skill(self, skill: str):
+        print(f"{self.name} has learned {skill}.")
         self.skills.append(skill)
 
     def learn_spell(self, spell: str):
+        print(f"{self.name} has learned {spell}.")
         self.spells.append(spell)
 
     def cleave(self, target1, target2 = None, target3 = None):
@@ -176,11 +205,15 @@ class Player(Character):
         return True
 
     def basic_shot(self, target,dmg_mod = 1.0, dmg_type = "physical"):
-        if self.invent['ARROWS'] > 0:
+        for item in self.invent:    
+            if item.name == "ARROWS":
+                arrows = item #type: Item
+
+        if arrows.quantity > 0: #type: ignore
             print(f"{self.name} shoots {target.name}.")
-            self.invent['ARROWS'] -= 1
+            arrows.quantity -= 1 #type: ignore
             target.take_damage(round(dmg_mod * self.phys_damage), dmg_type)
-            print(f"Arrows remaining: {self.invent['ARROWS']}.")
+            print(f"Arrows remaining: {arrows.quantity}.") #type: ignore
         else:
             print("Not enough arrows!")
             self.melee_strike(target)
@@ -263,6 +296,18 @@ class Player(Character):
             print(f"{self.name} has insufficient mana to cast Shadow Fangs.")
             return False
         
+    def cast_heal(self):
+        healing = round(50 + (2.5 * self.wisdom))
+        mana_cost = 50
+
+        print(f"{self.name} attempts to cast Heal.")
+
+        if self.mana - mana_cost >= 0:
+            self.health = min(self.max_health, self.health + healing )
+            return True
+        else:
+            print(f"{self.name} has insufficient mana to cast Heal.")
+            return False
+        
     def death(self):
-        print(f"{self.name} has died.")
         print("Thank you for playing Fantasy Simulator.")
