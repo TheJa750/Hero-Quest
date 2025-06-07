@@ -3,6 +3,8 @@ from equipment import *
 from Constants import *
 
 prices = {
+    "COINS": 1,
+    "ARROWS": 5,
     "HEALTH POTION": 50,
     "MANA POTION": 50,
     "SPELLBOOK": 250,
@@ -31,6 +33,9 @@ class Item():
 
     def __str__(self):
         return f"Item: {self.name} Quantity: {self.quantity}"
+    
+    def __repr__(self):
+        return str(self)
     
     def __eq__(self, other):
         return self.name == str(other)

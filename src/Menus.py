@@ -184,11 +184,11 @@ def use_item_menu(player:Player, item: Item):
         slot = item.item.slot
         match slot:
             case "head":
-                player.head_armor.compare_equipment(item)
+                player.head_armor.compare_equipment(item.item)
             case "body":
-                player.body_armor.compare_equipment(item)
+                player.body_armor.compare_equipment(item.item)
             case "weapon":
-                player.weapon.compare_equipment(item)
+                player.weapon.compare_equipment(item.item)
 
         if user_yes_no_check(item.name, "equip"): 
             player.equip_item(item.item)

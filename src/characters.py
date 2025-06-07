@@ -1,6 +1,6 @@
 from equipment import *
 from Constants import *
-from shop import Item
+from item import Item
 
 class Character():
     def __init__(self, name, stats):
@@ -108,6 +108,12 @@ Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.arm
             self.mage_damage -= old_equip.mage_damage
             temp = Item(old_equip)
             self.invent.append(temp)
+        
+        if "Lucky" in equipment.name:
+            self.luck += 2
+
+        if "Lucky" in old_equip.name:
+            self.luck -= 2
     
     def melee_strike(self, target):
         # Calculating melee damage

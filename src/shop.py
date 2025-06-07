@@ -29,10 +29,15 @@ class Shop():
         self.prices.clear()
 
         #Determine number of base stock item rolls using player luck
-        item_rolls = 1
+        item_rolls = self.player.luck // 2
 
         #Add each item to shop stock
-        items = random.choices(basic_items, weights=weights, k=item_rolls)
+        choice_list = basic_items.copy()
+        weights_list = weights.copy()
+        if self.player.style == "Archer":
+            choice_list.append(Item("ARROWS", 5))
+            weights_list.append(100)
+        items = random.choices(choice_list, weights=weights_list, k=item_rolls)
         for item in items:
             self.add_to_items(item)
 
@@ -49,7 +54,7 @@ class Shop():
 
         #Update prices for new stock
         for item in self.items:
-            self.prices.append(item.value * self.markup)
+            self.prices.append(round(item.value * self.markup))
 
     def __str__(self):
         strings = ["Stock:"]
@@ -145,8 +150,11 @@ class Shop():
         #Check if item is equipment or not for setting sell amount
         if item.is_equip:
             amount = 1
+        elif item.name == "COINS":
+            print("Nice try wise guy.")
+            return
         else:
-            prompt = f"How many {item.name} would you like to buy? (0 - {item.quantity})"
+            prompt = f"How many {item.name} would you like to sell? (0 - {item.quantity})"
             valid_inputs = ["0"]
             for i in range(item.quantity):
                 valid_inputs.append(f"{i+1}")
