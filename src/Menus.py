@@ -293,11 +293,16 @@ def battle(player: Player, enemies: list[Enemy]):
         if action_code != 0:
             print(f"{player.name} has fled succesfully.")
             return 1
+        
+        alive_enemies = []
 
         for enemy in enemies:
             if enemy.health <= 0:
                 enemy.death(player)
-                enemies.remove(enemy)
+            else:
+                alive_enemies.append(enemy)
+
+        enemies = alive_enemies
 
         if len(enemies) > 0:
             for enemy in enemies:

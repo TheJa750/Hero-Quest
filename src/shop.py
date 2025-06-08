@@ -91,7 +91,7 @@ class Shop():
             amount = 1
             if slot == "head":
                 self.player.head_armor.compare_equipment(item.item)
-            if slot == "body":
+            elif slot == "body":
                 self.player.body_armor.compare_equipment(item.item)
             else:
                 self.player.weapon.compare_equipment(item.item)

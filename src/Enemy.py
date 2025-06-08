@@ -73,11 +73,13 @@ class Enemy(Character):
                         quantity = random.randint(2, 2 + modifier)
                     case _:
                         quantity = 1
+                exists = False
                 for obj in loot:
                     if obj.name == item:
                         obj.quantity += quantity
-                    else:
-                        loot.append(Item(item, quantity))
+                        exists = True
+                if not exists:
+                    loot.append(Item(item, quantity))
 
         return loot #type: list[Item]
 
