@@ -8,7 +8,7 @@ from Constants import *
 
 def main():
     print(divider)
-    print("Welcome to Fantasy Simulator".center(54))
+    print("Welcome to Hero Quest".center(54))
     print(divider)
 
     player = create_character()

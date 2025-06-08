@@ -310,4 +310,4 @@ class Player(Character):
             return False
         
     def death(self):
-        print("Thank you for playing Fantasy Simulator.")
+        print("Thank you for playing Hero Quest.")

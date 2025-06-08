@@ -226,7 +226,10 @@ def use_item_menu(player:Player, item: Item):
                     if user_yes_no_check(item, "use"):
                         item.quantity -= 1
                         for skill in player.skills:
-                            skill_list.remove(skill) 
+                            skill_list.remove(skill)
+                        if player.style != "Archer":
+                            skill_list.remove("Double Shot")
+                            skill_list.remove("Piercing Shot")
                         new_skill = random.choice(skill_list)
                         player.learn_skill(new_skill)
             case "COINS":
