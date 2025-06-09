@@ -82,7 +82,7 @@ class Player(Character):
         if exp_amount >= self.exp:
             exp = exp_amount - self.exp #get remainder toward next level
             self.level_up() #level up and calc new exp requirement
-            self.exp -= exp #remove remainder from new requirement
+            self.gain_exp(exp) #recursively call in cases of gaining enough xp for 2 levels at once.
         else:
             self.exp -= exp_amount #count down toward leveling up
 

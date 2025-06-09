@@ -90,4 +90,5 @@ class Enemy(Character):
 
         #loop to add to player invent and print loot message
         for obj in loot:
+            print(f"{player.name} recieves {obj} from {self.name}")
             player.add_to_invent(obj)

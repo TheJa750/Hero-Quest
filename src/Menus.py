@@ -192,6 +192,7 @@ def use_item_menu(player:Player, item: Item):
 
         if user_yes_no_check(item.name, "equip"): 
             player.equip_item(item.item)
+            player.invent.remove(item)
         else:
             return
         
@@ -236,6 +237,11 @@ def use_item_menu(player:Player, item: Item):
                 print("Lovely money!")
             case _:
                 print("I wonder what I can do with this... Maybe I can sell it?")
+
+        exists, index = player.check_for_item(item.name)
+        
+        if exists and player.invent[index].quantity == 0:
+            player.invent.remove(item)
         
         return
         
