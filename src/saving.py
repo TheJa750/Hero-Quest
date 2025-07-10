@@ -32,6 +32,7 @@ def save_game(player: Player, shop: Shop, dungeon: Dungeon, save_slot: int):
     
     json_data[save_name] = {
         "player": player.name,
+        "class": player.style,
         "level": player.level,
         "dungeon": dungeon.name
     }

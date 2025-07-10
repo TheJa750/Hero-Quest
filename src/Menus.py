@@ -332,9 +332,10 @@ def load_menu():
     i = 1
     for slot in saves:
         name = saves[slot]['player']
+        style = saves[slot]['class']
         level = saves[slot]['level']
         dungeon = saves[slot]['dungeon']
-        strings.append(f"{i} = {slot} [{name}, Level: {level}, Dungeon: {dungeon}]")
+        strings.append(f"{i} = {slot} [{name} {style}, Level: {level}, Dungeon: {dungeon}]")
         valid.append(str(i))
         i += 1
 

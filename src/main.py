@@ -61,5 +61,8 @@ def main():
         if save:
             save_slot = save_menu()
             saving = save_game(player, shop, dungeon, int(save_slot)) # type: ignore
+        else:
+            print("Game not saved.")
+            saving = False
 
 main()
