@@ -357,5 +357,6 @@ def save_menu():
 
     for i in range(len(saves), 5):  # Allow up to 5 save slots
         strings.append(f"{i + 1} = Empty Slot")
+        valid.append(str(i + 1))
 
     return validate_input("\n".join(strings), valid)
