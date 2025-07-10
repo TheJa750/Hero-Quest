@@ -1,5 +1,5 @@
 from random_functions import create_character, create_dungeon, check_load
-from Menus import main_menu, save_menu, load_menu
+from Menus import main_menu, load_menu
 from shop import Shop, user_yes_no_check
 from Constants import *
 from saving import save_game, load_game
@@ -54,15 +54,5 @@ def main():
             dungeon = create_dungeon(player) # type: ignore
 
         keep_playing = main_menu(player, dungeon, shop) # type: ignore
-
-    saving = True
-    while saving:
-        save = user_yes_no_check("game", "save")
-        if save:
-            save_slot = save_menu()
-            saving = save_game(player, shop, dungeon, int(save_slot)) # type: ignore
-        else:
-            print("Game not saved.")
-            saving = False
 
 main()

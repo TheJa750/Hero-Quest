@@ -71,3 +71,17 @@ def save_saves_summary(data):
     # Save the save slots summary to JSON
     with open(SAVE_SLOTS_SUMMARY_FILE, 'w') as f:
         json.dump(data, f, indent=4)
+
+def delete_save(save_name: str):
+    save_path = os.path.join(SAVE_DIR, f'{save_name}.pkl')
+    if os.path.exists(save_path):
+        os.remove(save_path)
+        print(f"Save '{save_name}' deleted successfully.")
+    else:
+        print(f"No save found with the name '{save_name}'.")
+    
+    # Update the save slots summary
+    json_data = list_saves_summary()
+    if save_name in json_data:
+        del json_data[save_name]
+        save_saves_summary(json_data)

@@ -160,13 +160,14 @@ class Shop():
                 valid_inputs.append(f"{i+1}")
             amount = int(validate_input(prompt, valid_inputs, "Please enter a valid amount."))
 
-        final_warning = f"Are you sure you would like to sell {item.name} x {amount}?\nWarning: items will be lost forever once sold.\n1 = Yes\n2 = No"
+        coins = round(item.value * amount * 0.7) #Shop buys for 70% of value
+        final_warning = f"Are you sure you would like to sell {item.name} x {amount} for {coins} coins?\nWarning: items will be lost forever once sold.\n1 = Yes\n2 = No"
         sell = validate_input(final_warning, ["1", "2"])
 
         if sell == "2": #No was selected, return to shop menu
             return
 
-        coins = round(item.value * amount * 0.7) #Shop buys for 70% of value
+        
         self.player.add_to_invent(Item("COINS", coins))
         item.quantity -= amount
         print(f"{self.player.name} hands over {amount} {item.name} and recieves {coins} coins.")

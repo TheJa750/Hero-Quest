@@ -6,7 +6,7 @@ from Constants import *
 from Enemy import Enemy
 from shop import Shop
 from item import Item
-from saving import list_saves_summary
+from saving import list_saves_summary, save_game, delete_save
 
 def target_selection_menu(enemies: list):
     i = 1
@@ -127,8 +127,8 @@ def main_combat_menu(player: Player, enemies: list):
             
 def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
     while True:
-        prompt = ("0 = Exit\n1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Status")
-        valid_inputs = ["0", "1", "2", "3", "4"]
+        prompt = ("0 = Exit\n1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Status\n5 = Manage Saved Games")
+        valid_inputs = ["0", "1", "2", "3", "4", "5"]
         choice = validate_input(prompt, valid_inputs)
 
         match choice:
@@ -160,6 +160,8 @@ def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
             case "4":
                 status_menu(player)
                 return True
+            case "5":
+                return main_save_menu(player, current_shop, current_dungeon)  # Placeholder for save management menu
 
 def shop_menu(player: Player, shop: Shop):
     print("Welcome to the Fantasy Shop!")
@@ -333,6 +335,7 @@ def battle(player: Player, enemies: list[Enemy]):
 def load_menu():
     strings = ["Available Save Slots:", "0 = Start New Game"]
     valid = ["0"]
+    slots = []
 
     saves = list_saves_summary()
     i = 1
@@ -343,30 +346,37 @@ def load_menu():
         dungeon = saves[slot]['dungeon']
         strings.append(f"{i} = {slot} [{name} - {style}, Level: {level}, Dungeon: {dungeon}]")
         valid.append(str(i))
+        slots.append(slot)
         i += 1
 
-    return validate_input("\n".join(strings), valid)
+    chosen_slot = validate_input("\n".join(strings), valid)
 
-def save_menu():
-    strings = ["Available Save Slots:"]
-    valid = []
+    if chosen_slot == "0":
+        return "0"  # New game option selected
+    else:
+        return slots[int(chosen_slot) - 1].lstrip("slot")  # Convert to zero-based index
 
-    saves = list_saves_summary()
-    i = 1
-    for slot in saves:
-        name = saves[slot]['player']
-        style = saves[slot]['class']
-        level = saves[slot]['level']
-        dungeon = saves[slot]['dungeon']
-        strings.append(f"{i} = {slot} [{name} - {style}, Level: {level}, Dungeon: {dungeon}]")
-        valid.append(str(i))
-        i += 1
+def list_saves(saves, starting_string: str = "Available Save Slots:"):
+    strings = [starting_string, "0 = Back"]
+    valid = ["0"]
 
-    for i in range(len(saves), 5):  # Allow up to 5 save slots
-        strings.append(f"{i + 1} = Empty Slot")
-        valid.append(str(i + 1))
+    
 
-    return validate_input("\n".join(strings), valid)
+    for i in range(1, 6):
+        slot_name = f"slot{i}"
+        if slot_name not in saves:
+            strings.append(f"{i} = Empty Slot")
+            valid.append(str(i))
+        else:
+            name = saves[slot_name]['player']
+            style = saves[slot_name]['class']
+            level = saves[slot_name]['level']
+            dungeon = saves[slot_name]['dungeon']
+            strings.append(f"{i} = {slot_name} [{name} - {style}, Level: {level}, Dungeon: {dungeon}]")
+            valid.append(str(i))
+            
+
+    return "\n".join(strings), valid
 
 def status_menu(player: Player):
     stats = [player.strength, player.agility, player.constitution, player.wisdom, player.luck]
@@ -383,3 +393,36 @@ def status_menu(player: Player):
     print(f"Physical Damage: {player.phys_damage}, Magical Damage: {player.mage_damage}")
     print(f"Skills: {player.skills}")
     print(f"Spells: {player.spells}")
+    print(f"Equipment:\nHead: {player.head_armor}\nBody: {player.body_armor}\nWeapon: {player.weapon}")
+
+def main_save_menu(player: Player, shop: Shop, dungeon: Dungeon):
+    saves = list_saves_summary()
+    saving = True
+    while saving:
+        save = user_yes_no_check("game", "save")
+        if save:
+            prompt, valid = list_saves(saves)
+            save_slot = validate_input(prompt, valid)
+            if save_slot != "0":
+                saving = save_game(player, shop, dungeon, int(save_slot)) # type: ignore
+        else:
+            print("Game not saved.")
+            saving = False
+
+    deleting = True
+    while deleting:
+        delete = user_yes_no_check("game", "delete")
+        if delete:
+            prompt, valid = list_saves(saves, "Choose Slot to Delete:")
+            delete_slot = validate_input(prompt, valid)
+            delete_slot = "slot" + delete_slot
+
+            if delete_slot in saves:
+                delete_save(delete_slot)
+                deleting = False
+        else:
+            print("No saves deleted.")
+            deleting = False
+                
+    return True  # Return to main menu after save management
+

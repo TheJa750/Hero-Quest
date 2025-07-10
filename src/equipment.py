@@ -20,6 +20,7 @@ class Equipment():
     
     def compare_equipment(self, other):
         print("Equipped vs. New")
+        print(f"Name: {self.name} vs. {other.name}")
         print(f"Armor: {self.armor} vs. {other.armor}")
         print(f"Magic Resist: {self.mr} vs. {other.mr}")
         print(f"Phyiscal Damage: {self.phys_damage} vs. {other.phys_damage}")
