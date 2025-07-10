@@ -6,6 +6,7 @@ from Constants import *
 from Enemy import Enemy
 from shop import Shop
 from item import Item
+from saving import list_saves_summary
 
 def target_selection_menu(enemies: list):
     i = 1
@@ -322,3 +323,38 @@ def battle(player: Player, enemies: list[Enemy]):
                     return 2
 
     return 0
+
+def load_menu():
+    strings = ["Available Save Slots:", "0 = Start New Game"]
+    valid = ["0"]
+
+    saves = list_saves_summary()
+    i = 1
+    for slot in saves:
+        name = saves[slot]['player']
+        level = saves[slot]['level']
+        dungeon = saves[slot]['dungeon']
+        strings.append(f"{i} = {slot} [{name}, Level: {level}, Dungeon: {dungeon}]")
+        valid.append(str(i))
+        i += 1
+
+    return validate_input("\n".join(strings), valid)
+
+def save_menu():
+    strings = ["Available Save Slots:"]
+    valid = []
+
+    saves = list_saves_summary()
+    i = 1
+    for slot in saves:
+        name = saves[slot]['player']
+        level = saves[slot]['level']
+        dungeon = saves[slot]['dungeon']
+        strings.append(f"{i} = {slot} [{name}, Level: {level}, Dungeon: {dungeon}]")
+        valid.append(str(i))
+        i += 1
+
+    for i in range(len(saves), 5):  # Allow up to 5 save slots
+        strings.append(f"{i + 1} = Empty Slot")
+
+    return validate_input("\n".join(strings), valid)

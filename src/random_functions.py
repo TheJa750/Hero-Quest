@@ -3,6 +3,7 @@ from Constants import *
 from player import Player
 from Enemy import Enemy
 from dungeon import Dungeon
+from shop import Shop
 from characters import get_starting_stats
 
 def create_dungeon(player: Player):
@@ -90,3 +91,14 @@ def create_character():
     
     return char
 
+def check_load(player, shop, dungeon):
+    if not isinstance(player, Player):
+        print("Error: Player data is invalid.")
+        return False
+    if not isinstance(shop, Shop):
+        print("Error: Shop data is invalid.")
+        return False
+    if not isinstance(dungeon, Dungeon):
+        print("Error: Dungeon data is invalid.")
+        return False
+    return True
