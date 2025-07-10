@@ -11,12 +11,7 @@ class Equipment():
         self.mage_damage = mage_dmg
     
     def __str__(self) -> str:
-        return f"{self.name}:\n\
-            Slot: {self.slot}\n\
-            Armor: {self.armor}\n\
-            Magic Resist: {self.mr}\n\
-            Physical Damage: {self.phys_damage}\n\
-            Magical Damage: {self.mage_damage}"
+        return f"{self.name}: Slot: {self.slot} Armor: {self.armor} Magic Resist: {self.mr} Physical Damage: {self.phys_damage} Magical Damage: {self.mage_damage}"
     
     def compare_equipment(self, other):
         print("Equipped vs. New")
@@ -32,10 +27,10 @@ class Equipment():
 def create_new_equipment(player):
     luck_mod = int(round(player.luck / 3))
     if player.level <= 5:
-        def_points = random.randint(0, 3 + luck_mod)
+        def_points = random.randint(0, 5 + luck_mod)
         dmg_points = random.randint(5, 15 + luck_mod)
     elif 5 < player.level <= 10:
-        def_points = random.randint(5, 7 + luck_mod)
+        def_points = random.randint(4, 12 + luck_mod)
         dmg_points = random.randint(12, 25 + luck_mod)
     elif 10 < player.level <= 20:
         def_points = random.randint(10, 20 + luck_mod)
@@ -55,13 +50,19 @@ def create_new_equipment(player):
             mr += 1
         def_points -= 1
 
-    while dmg_points > 0:
-        choice = random.choice(["phys", "mage"])
-        if choice == "phys":
-            phys += 1
-        else:
-            mage += 1
-        dmg_points -= 1
+    choice = random.choices(["phys", "mage", "both"], weights=[0.4, 0.4, 0.2], k=1)[0]
+    if choice == "phys":
+        phys += dmg_points
+    elif choice == "mage":
+        mage += dmg_points
+    else:  # both
+        while dmg_points > 0:
+            split_choice = random.choice(["phys", "mage"])
+            if split_choice == "phys":
+                phys += 1
+            else:
+                mage += 1
+            dmg_points -= 1
 
     slot = random.choice(["weapon", "head", "body"])
 

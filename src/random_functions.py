@@ -9,17 +9,25 @@ from characters import get_starting_stats
 def create_dungeon(player: Player):
     type = random.choice(dungeon_types)
     info_list = dungeon_type_info[type]
+    diff = 1
 
     if player.level <= 4:
         floors = 1
+        rooms = random.randint(4, 7)
     elif 4 < player.level <= 9:
         floors = 2
+        rooms = random.randint(2, 4)
+        diff = 2
     elif 9 < player.level <= 20:
         floors = 3
+        rooms = random.randint(2, 4)
+        diff = 3
     else:
-        floors = 4 
+        floors = 4
+        rooms = 3
+        diff = 4
 
-    return Dungeon(type, floors, 1, info_list, player.level)
+    return Dungeon(type, floors, diff, info_list, player.level, rooms)
 
 def create_character():
     random_stats = get_starting_stats()

@@ -5,10 +5,10 @@ from player import Player
 from item import Item
 
 basic_items = [
-    Item("HEALTH POTION"),
-    Item("MANA POTION"),
-    Item("SPELLBOOK"),
-    Item("SKILLBOOK")
+    "HEALTH POTION",
+    "MANA POTION",
+    "SPELLBOOK",
+    "SKILLBOOK"
 ]
 
 weights = [75, 75, 1, 1]
@@ -35,9 +35,26 @@ class Shop():
         choice_list = basic_items.copy()
         weights_list = weights.copy()
         if self.player.style == "Archer":
-            choice_list.append(Item("ARROWS", 5))
+            choice_list.append("ARROWS")
             weights_list.append(100)
-        items = random.choices(choice_list, weights=weights_list, k=item_rolls)
+        items_choices = random.choices(choice_list, weights=weights_list, k=item_rolls)
+        
+        items = []
+        for item in items_choices:
+            match item:
+                case "HEALTH POTION":
+                    items.append(Item("HEALTH POTION", 1))
+                case "MANA POTION":
+                    items.append(Item("MANA POTION", 1))
+                case "SPELLBOOK":
+                    items.append(Item("SPELLBOOK", 1))
+                case "SKILLBOOK":
+                    items.append(Item("SKILLBOOK", 1))
+                case "ARROWS":
+                    items.append(Item("ARROWS", 5))
+        items.append(Item("HEALTH POTION", 2))  # Always add health potions
+        items.append(Item("MANA POTION", 2))  # Always add mana potions
+
         for item in items:
             self.add_to_items(item)
 
@@ -81,10 +98,12 @@ class Shop():
         return exists, index 
     
     def buy_item(self, index: int):
-        money = self.player.get_item("COINS")
+        money = self.player.get_item("COINS") 
 
         item = self.items[index]
         price = self.prices[index]
+
+        print(f"Debug: {item.name} has value {item.value} and price {price} with markup {self.markup}")
 
         if item.is_equip:
             slot = item.item.slot
@@ -104,7 +123,7 @@ class Shop():
         
         cost = price * amount
         
-        print(f"{item.name} will cost {cost} coins.")
+        print(f"{item.name} will cost {cost} coins. You have {money.quantity} coins.") #type: ignore
 
         if not user_yes_no_check(item.name, "buy"):
             return

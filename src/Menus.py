@@ -128,7 +128,7 @@ def main_combat_menu(player: Player, enemies: list):
 def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
     while True:
         prompt = ("0 = Exit\n1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Status\n5 = Manage Saved Games")
-        valid_inputs = ["0", "1", "2", "3", "4", "5"]
+        valid_inputs = ["0", "1", "2", "3", "4", "5", "69", "420"]
         choice = validate_input(prompt, valid_inputs)
 
         match choice:
@@ -155,17 +155,27 @@ def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
                 
                 return True
             case "3":
+                print(divider)
                 shop_menu(player, current_shop)
                 return True
             case "4":
                 status_menu(player)
                 return True
             case "5":
-                return main_save_menu(player, current_shop, current_dungeon)  # Placeholder for save management menu
+                return main_save_menu(player, current_shop, current_dungeon)
+            case "69":
+                current_shop.restock_items()
+                print("Restocking shop items...")
+                return True
+            case "420":
+                current_dungeon.floors.clear()  # Clear all floors in the dungeon
+                print("Clearing dungeon floors...")
+                return True
 
 def shop_menu(player: Player, shop: Shop):
     print("Welcome to the Fantasy Shop!")
     print("Can I interest you in any of our fine wares?")
+    print(f"Debug: markup is {shop.markup}")
     while True:
 
         prompt = ["0 = Back", "1 = Sell"]
@@ -184,9 +194,6 @@ def shop_menu(player: Player, shop: Shop):
                 shop.sell_item()
             case _:
                 shop.buy_item(choice-2)
-        
-        if not user_yes_no_check("shopping", "continue"):
-            return
     
 def use_item_menu(player:Player, item: Item):
     if item.is_equip:
@@ -264,23 +271,21 @@ def user_yes_no_check(item, function: str):
         return False
     
 def dungeon_menu(player: Player, dungeon: Dungeon, shop: Shop):
+    print(divider)
     print(dungeon)
 
-    if not user_yes_no_check(dungeon.name, "explore"):
-        return True
-    
     keep_exploring = True
 
     while keep_exploring:
         room = dungeon.next_room() #type: Room | str
-        print(divider)
-        
 
         if isinstance(room, str): #Only type str when dungeon complete, returns to main menu to begin new loop
+            print(divider)
             print(room)
             shop.restock_items()
             return True
-        
+    
+        print(divider)
         print(repr(room))
         action_code = battle(player, room.enemies)
 
@@ -295,6 +300,14 @@ def dungeon_menu(player: Player, dungeon: Dungeon, shop: Shop):
                 return False
         
         keep_exploring = user_yes_no_check(dungeon.name, "explore")
+        if not keep_exploring:
+            room = dungeon.next_room() #type: Room | str
+
+            if isinstance(room, str): #Only type str when dungeon complete, returns to main menu to begin new loop
+                print(divider)
+                print(room)
+                shop.restock_items()
+                return True
 
     return True
             
@@ -396,33 +409,27 @@ def status_menu(player: Player):
     print(f"Equipment:\nHead: {player.head_armor}\nBody: {player.body_armor}\nWeapon: {player.weapon}")
 
 def main_save_menu(player: Player, shop: Shop, dungeon: Dungeon):
-    saves = list_saves_summary()
-    saving = True
-    while saving:
-        save = user_yes_no_check("game", "save")
-        if save:
-            prompt, valid = list_saves(saves)
-            save_slot = validate_input(prompt, valid)
-            if save_slot != "0":
-                saving = save_game(player, shop, dungeon, int(save_slot)) # type: ignore
-        else:
-            print("Game not saved.")
-            saving = False
+    prompt = "Manage Saved Games:\n0 = Back\n1 = Save Game\n2 = Delete Save"
+    
+    while True:
+        choice = validate_input(prompt, ["0", "1", "2"])
+        saves = list_saves_summary()
+        match choice:
+            case "0":
+                return True
+            case "1":  # Save Game
+                prompt, valid = list_saves(saves)
+                save_slot = validate_input(prompt, valid)
+                if save_slot != "0":
+                    save_game(player, shop, dungeon, int(save_slot)) # type: ignore
+                    return True
+            case "2": # Delete Save
+                prompt, valid = list_saves(saves, "Choose Slot to Delete:")
+                delete_slot = validate_input(prompt, valid)
+                delete_slot = "slot" + delete_slot
 
-    deleting = True
-    while deleting:
-        delete = user_yes_no_check("game", "delete")
-        if delete:
-            prompt, valid = list_saves(saves, "Choose Slot to Delete:")
-            delete_slot = validate_input(prompt, valid)
-            delete_slot = "slot" + delete_slot
-
-            if delete_slot in saves:
-                delete_save(delete_slot)
-                deleting = False
-        else:
-            print("No saves deleted.")
-            deleting = False
-                
-    return True  # Return to main menu after save management
+                if delete_slot in saves:
+                    delete_save(delete_slot)
+                    return True
+                    
 

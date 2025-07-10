@@ -62,10 +62,7 @@ class Floor():
     
     def create_room(self, room_num, boss = False):
         name = f"{self.name}-{room_num}"
-        if self.diff > 1:
-            enemies = round(self.diff / 2)
-        else:
-            enemies = 1
+        enemies = random.randint(1, 3) 
         
         return Room(name, self, boss, enemies)
     
@@ -119,7 +116,7 @@ class Room():
         return len(self.enemies)
     
     def __repr__(self):
-        strings = [f"{self.name}"]
+        strings = [f"{self.name}", divider]
         for enemy in self.enemies:
             strings.append(str(enemy))
         return "\n".join(strings)

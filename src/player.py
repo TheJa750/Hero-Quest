@@ -112,6 +112,7 @@ class Player(Character):
     def add_stats(self, new_points):
         print(f"{new_points} stat point(s) available.")
         print("How would you like to distribute these point(s)?") # [Strength, Agility, Constitution, Wisdom, Luck]
+        print(f"Str: {self.strength}, Agi: {self.agility}, Con: {self.constitution}, Wis: {self.wisdom}, Luck: {self.luck}")
         valid_inputs = ["1", "2", "3", "4", "5"]
         choice = validate_input("1 = Strength\n2 = Agility\n3 = Constitution\n4 = Wisdom\n5 = Luck",
                                 valid_inputs,

@@ -18,7 +18,7 @@ class Enemy(Character):
             for i in range(self.level, level + 1):
                 self.level_up_enemy()
 
-        self.exp = (base_exp * 2 * (growth - 1)) + (self.level * base_exp)
+        self.exp = (base_exp * 2 * (growth - 1)) + (self.level * base_exp) + 10
 
     def __str__(self):
         return f"Name: {self.name} Level: {self.level} Health: {self.health}"
