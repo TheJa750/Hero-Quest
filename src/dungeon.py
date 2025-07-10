@@ -138,5 +138,7 @@ class Room():
 
         return Enemy(name, stats, level, growth, base_exp)
 
-
-
+    def remove_dead_enemies(self):
+        # Remove dead enemies from the room
+        self.enemies = [enemy for enemy in self.enemies if enemy.health > 0]
+        return self

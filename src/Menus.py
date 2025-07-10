@@ -128,7 +128,7 @@ def main_combat_menu(player: Player, enemies: list):
 def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
     while True:
         prompt = ("0 = Exit\n1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Status")
-        valid_inputs = ["1", "2", "3", "4"]
+        valid_inputs = ["0", "1", "2", "3", "4"]
         choice = validate_input(prompt, valid_inputs)
 
         match choice:
@@ -286,7 +286,7 @@ def dungeon_menu(player: Player, dungeon: Dungeon, shop: Shop):
             case 0:
                 pass
             case 1: #Flee, return room to dungeon -> floor 0 -> room 0 then return to main menu with True (continue playing)
-                dungeon.floors[0].rooms.insert(0, room)
+                dungeon.floors[0].rooms.insert(0, room.remove_dead_enemies())
                 return True
             case 2: #player has died return to main menu with False (stop playing)
                 player.death()
