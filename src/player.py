@@ -85,8 +85,7 @@ class Player(Character):
             self.gain_exp(exp) #recursively call in cases of gaining enough xp for 2 levels at once.
         else:
             self.exp -= exp_amount #count down toward leveling up
-
-        print(f"Exp remaining until level {self.level + 1}: {self.exp}")
+            print(f"Exp remaining until level {self.level + 1}: {self.exp}")
 
     def level_up(self):
         self.level += 1
@@ -152,6 +151,8 @@ class Player(Character):
             case "Luck":
                 self.luck += int(assign)
                 print(f"Luck: {self.luck}")
+            
+        print(divider)
 
         if int(assign) < new_points:
             self.add_stats(new_points - int(assign))

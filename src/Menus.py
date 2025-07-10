@@ -127,16 +127,19 @@ def main_combat_menu(player: Player, enemies: list):
             
 def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
     while True:
-        prompt = ("1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Exit")
+        prompt = ("0 = Exit\n1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Status")
         valid_inputs = ["1", "2", "3", "4"]
         choice = validate_input(prompt, valid_inputs)
 
         match choice:
+            case "0":
+                return False
             case "1":
                 return dungeon_menu(player, current_dungeon, current_shop)
             case "2":
-                print(f"Inventory: {player.invent}")
                 print(divider)
+                print(f"Inventory: {player.invent}")
+                
                 prompt = ["Choose item:", "0 = Back"]
                 valid_inputs = ["0"]
                 
@@ -145,15 +148,18 @@ def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
                     valid_inputs.append(f"{i+1}")
 
                 choice = int(validate_input("\n".join(prompt), valid_inputs))
-                item = player.invent[choice - 1]
 
-                use_item_menu(player, item)
+                if choice != 0:
+                    item = player.invent[choice - 1]
+                    use_item_menu(player, item)
+                
                 return True
             case "3":
                 shop_menu(player, current_shop)
                 return True
             case "4":
-                return False
+                status_menu(player)
+                return True
 
 def shop_menu(player: Player, shop: Shop):
     print("Welcome to the Fantasy Shop!")
@@ -335,7 +341,7 @@ def load_menu():
         style = saves[slot]['class']
         level = saves[slot]['level']
         dungeon = saves[slot]['dungeon']
-        strings.append(f"{i} = {slot} [{name} {style}, Level: {level}, Dungeon: {dungeon}]")
+        strings.append(f"{i} = {slot} [{name} - {style}, Level: {level}, Dungeon: {dungeon}]")
         valid.append(str(i))
         i += 1
 
@@ -349,9 +355,10 @@ def save_menu():
     i = 1
     for slot in saves:
         name = saves[slot]['player']
+        style = saves[slot]['class']
         level = saves[slot]['level']
         dungeon = saves[slot]['dungeon']
-        strings.append(f"{i} = {slot} [{name}, Level: {level}, Dungeon: {dungeon}]")
+        strings.append(f"{i} = {slot} [{name} - {style}, Level: {level}, Dungeon: {dungeon}]")
         valid.append(str(i))
         i += 1
 
@@ -360,3 +367,19 @@ def save_menu():
         valid.append(str(i + 1))
 
     return validate_input("\n".join(strings), valid)
+
+def status_menu(player: Player):
+    stats = [player.strength, player.agility, player.constitution, player.wisdom, player.luck]
+    
+    print(divider)
+    print(f"Name: {player.name}")
+    print(f"Class: {player.style}")
+    print(f"Level: {player.level}")
+    print(f"Experience to next level: {player.exp}")
+    print(f"Stats:\nStrength: {stats[0]}, Agility: {stats[1]}, Constitution: {stats[2]}, Wisdom: {stats[3]}, Luck: {stats[4]}")
+    print(f"Health: {player.health}/{player.max_health}")
+    print(f"Mana: {player.mana}/{player.max_mana}")
+    print(f"Armor: {player.armor}, Magic Resist: {player.magic_resist}")
+    print(f"Physical Damage: {player.phys_damage}, Magical Damage: {player.mage_damage}")
+    print(f"Skills: {player.skills}")
+    print(f"Spells: {player.spells}")

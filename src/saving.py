@@ -5,7 +5,7 @@ from player import Player
 from shop import Shop
 from dungeon import Dungeon
 
-SAVE_DIR = '../saves'
+SAVE_DIR = 'saves'
 SAVE_SLOTS_SUMMARY_FILE = os.path.join(SAVE_DIR, 'save_slots.json')
 
 def save_game(player: Player, shop: Shop, dungeon: Dungeon, save_slot: int):
