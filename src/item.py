@@ -12,7 +12,8 @@ prices = {
     "CLOTH": 10,
     "DUSTY TOME": 10,
     "RING": 150,
-    "NECKLACE": 200
+    "NECKLACE": 200,
+    "FRUIT": 500
 }
 
 class Item():
@@ -44,5 +45,9 @@ class Item():
         if self.is_equip:
             value = (5 * (self.item.armor + self.item.mr)) + (2 * (self.item.phys_damage + self.item.mage_damage))
         else:
-            value = prices[self.name]
+            name = self.name
+
+            if "FRUIT OF " in self.name:
+                name = "FRUIT"
+            value = prices[name]
         return value

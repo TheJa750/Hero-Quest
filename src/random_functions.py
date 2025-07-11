@@ -161,18 +161,27 @@ def use_item(player: Player, item: Item):
                         match stat:
                             case "STRENGTH":
                                 player.strength += value
+                                print(f"Strength: {player.strength}")
                             case "AGILITY":
                                 player.agility += value
+                                print(f"Agility: {player.agility}")
                             case "CONSTITUTION":
                                 player.constitution += value
+                                print(f"Constitution: {player.constitution}")
                             case "WISDOM":
                                 player.wisdom += value
+                                print(f"Wisdom: {player.wisdom}")
                             case "LUCK":
                                 player.luck += value
+                                print(f"Luck: {player.luck}")
                             case "ASCENSION":
-                                player.growth += random.randint(1, 2)
+                                growth_value = random.randint(1, 2)
+                                player.growth += growth_value
+                                print(f"{player.name} feels like everything has improved...")
+                                print("I wonder what this fruit could have done.")
                             case "BLOODTHIRST":
                                 player.lifesteal += 2 * value
+                                print(f"{player.name} has learned how to leech the life of his foes.")
                         item.quantity -= 1
             else:
                 print("I wonder what I can do with this... Maybe I can sell it?")
@@ -184,4 +193,3 @@ def use_item(player: Player, item: Item):
 
     return
 
- 

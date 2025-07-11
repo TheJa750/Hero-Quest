@@ -186,7 +186,9 @@ def shop_menu(player: Player, shop: Shop):
             case 0:
                 return
             case 1:
-                shop.sell_item()
+                shopping = True
+                while shopping:
+                    shopping = shop.sell_item()
             case _:
                 shop.buy_item(choice-2)
     

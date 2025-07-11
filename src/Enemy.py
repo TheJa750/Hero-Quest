@@ -54,38 +54,48 @@ class Enemy(Character):
         ]
         weights = [12, 12, 6, 6, 35, 35, 80, 3, 3, 1]
 
+        print(f"DEBUG: mod: {luck_mod} growth: {self.growth}")
         num_rolls = random.randint(1, luck_mod + self.growth)
+        print(f"DEBUG: rolls: {num_rolls}")
 
-        equip_roll = random.randint(0, 300)
-
-        if 5 + player.luck >= equip_roll:
-            item = Item(create_new_equipment(player))
-            loot.append(item)
-        else:
-            items = random.choices(item_list, weights, k=num_rolls)
-            for item in items:
-                match item:
-                    case "COINS":
-                        modifier = self.level + (2 * self.growth)
-                        quantity = random.randint(10, 5 * modifier)
-                    case "CLOTH", "DUSTY TOME":
-                        modifier = self.level + (2 * self.growth)
-                        quantity = random.randint(2, 2 + modifier)
-                    case _:
-                        quantity = 1
-                name = item
-                if item == "FRUIT":
-                    stats = ["STRENGTH", "AGILITY", "CONSTITUTION", "WISDOM", "LUCK", "ASCENSION", "BLOODTHIRST"]
-                    stat_weights = [100, 100, 100, 100, 15, 1, 5]
-                    stat = random.choices(stats, stat_weights)
-                    name = item + " OF " + stat[0]
-                exists = False
-                for obj in loot:
-                    if obj.name == name:
-                        obj.quantity += quantity
-                        exists = True
-                if not exists:
-                    loot.append(Item(name, quantity))
+        while num_rolls > 0:
+            equip_rolls = 0
+            equip_roll = random.randint(0, 300 * (equip_rolls + 1))
+            if 5 + player.luck >= equip_roll & num_rolls > 1:
+                print("DEBUG: Rolled equipment")
+                item = Item(create_new_equipment(player))
+                loot.append(item)
+                num_rolls -= 3
+                equip_rolls += 1
+            else:
+                print("DEBUG: Failed equipment roll")
+                item_rolls = random.randint(1, num_rolls)
+                print(f"DEBUG: Rolling {item_rolls} items")
+                items = random.choices(item_list, weights, k=item_rolls)
+                num_rolls -= item_rolls
+                for item in items:
+                    match item:
+                        case "COINS":
+                            modifier = self.level + (2 * self.growth)
+                            quantity = random.randint(10, 5 * modifier)
+                        case "CLOTH", "DUSTY TOME":
+                            modifier = self.level + (2 * self.growth)
+                            quantity = random.randint(2, 2 + modifier)
+                        case _:
+                            quantity = 1
+                    name = item
+                    if item == "FRUIT":
+                        stats = ["STRENGTH", "AGILITY", "CONSTITUTION", "WISDOM", "LUCK", "ASCENSION", "BLOODTHIRST"]
+                        stat_weights = [100, 100, 100, 100, 15, 1, 5]
+                        stat = random.choices(stats, stat_weights)
+                        name = item + " OF " + stat[0]
+                    exists = False
+                    for obj in loot:
+                        if obj.name == name:
+                            obj.quantity += quantity
+                            exists = True
+                    if not exists:
+                        loot.append(Item(name, quantity))
 
         return loot #type: list[Item]
 

@@ -59,7 +59,9 @@ class Shop():
             self.add_to_items(item)
 
         #Determine number of equipment rolls using player luck
-        num_equip = random.randint(int(round(self.player.luck/7)), int(round(self.player.luck)/3))
+        low_roll = max(int(round(self.player.luck/15)), 1) #At least 1 for low
+        high_roll = max(int(round(self.player.luck)/8), 2) #At least 2 for high
+        num_equip = min(random.randint(low_roll, high_roll), 6) #No more than 6 in a shop
 
         #Add each new equipment to the shop stock
         for i in range(num_equip):
@@ -161,7 +163,7 @@ class Shop():
         choice = int(validate_input(prompt, valid))
 
         if choice == 0: #back was selected, return to shop menu
-            return
+            return False
 
         #Get the Item object from player inventory
         item = self.player.invent[choice-1] #type: Item
@@ -171,7 +173,7 @@ class Shop():
             amount = 1
         elif item.name == "COINS":
             print("Nice try wise guy.")
-            return
+            return True
         else:
             prompt = f"How many {item.name} would you like to sell? (0 - {item.quantity})"
             valid_inputs = ["0"]
@@ -183,8 +185,8 @@ class Shop():
         final_warning = f"Are you sure you would like to sell {item.name} x {amount} for {coins} coins?\nWarning: items will be lost forever once sold.\n1 = Yes\n2 = No"
         sell = validate_input(final_warning, ["1", "2"])
 
-        if sell == "2": #No was selected, return to shop menu
-            return
+        if sell == "2": #No was selected, return to sell menu
+            return True
 
         
         self.player.add_to_invent(Item("COINS", coins))
@@ -193,6 +195,8 @@ class Shop():
 
         if item.quantity == 0: #if all are sold, remove from inventory.
             self.player.invent.remove(item)
+
+        return True
 
 def user_yes_no_check(item, function: str):
     prompt = f"Would you like to {function} {item}?\n1 = Yes\n2 = No"
