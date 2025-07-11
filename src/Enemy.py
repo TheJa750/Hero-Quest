@@ -67,7 +67,7 @@ class Enemy(Character):
                 match item:
                     case "COINS":
                         modifier = self.level + (2 * self.growth)
-                        quantity = random.randint(25, 25 * modifier)
+                        quantity = random.randint(10, 5 * modifier)
                     case "CLOTH", "DUSTY TOME":
                         modifier = self.level + (2 * self.growth)
                         quantity = random.randint(2, 2 + modifier)
@@ -81,11 +81,11 @@ class Enemy(Character):
                     name = item + " OF " + stat[0]
                 exists = False
                 for obj in loot:
-                    if obj.name == item:
+                    if obj.name == name:
                         obj.quantity += quantity
                         exists = True
                 if not exists:
-                    loot.append(Item(item, quantity))
+                    loot.append(Item(name, quantity))
 
         return loot #type: list[Item]
 
