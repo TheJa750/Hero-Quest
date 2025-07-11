@@ -94,7 +94,7 @@ equipment_slot_wep = "weapon"
 divider = "--------------------------------------------------------"
 
 spells = ["Fireball", "Chain Lightning", "Shadow Fangs", "Heal"]
-skills = ["Double Shot", "Piercing Shot", "Cleave", "Devastating Blow", "Fury of Blows"]
+skills = ["Double Shot", "Piercing Shot", "Cleave", "Devastating Strike", "Fury of Blows", "Draining Strike"]
 
 prename_modifiers = [
     "Lucky",
@@ -103,7 +103,8 @@ prename_modifiers = [
     "Legendary",
     "Dangerous",
     "Mystical",
-    "Curved"
+    "Curved",
+    "Draining"
 ]
 
 postname_modifiers = [
@@ -113,7 +114,8 @@ postname_modifiers = [
     "Whittling",
     "Isolation",
     "Desolation",
-    "Abomination"
+    "Abomination",
+    "Draining"
 ]
 
 def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):

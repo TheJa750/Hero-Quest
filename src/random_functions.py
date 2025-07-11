@@ -44,12 +44,9 @@ def create_character():
     match char_type:
         case "1": #Mage
             char_type = "Mage"
-            print(divider)
-            print("Choose starting spell:\n1 = Fireball\n2 = Chain Lightning\n3 = Shadow Fangs")
-            starting_spell_num = input()
-            while not (starting_spell_num == "1" or starting_spell_num == "2" or starting_spell_num == "3"):
-                print("Please choose a valid starting spell.")
-                starting_spell_num = input()
+            prompt = "Choose starting spell:\n1 = Fireball\n2 = Chain Lightning\n3 = Shadow Fangs"
+            valid = ["1", "2", "3"]
+            starting_spell_num = validate_input(prompt, valid, "Please choose a valid starting spell.")
 
             match starting_spell_num:
                 case "1":
@@ -63,12 +60,9 @@ def create_character():
         
         case "2": #Archer
             char_type = "Archer"
-            print(divider)
-            print("Choose a starting skill:\n1 = Double Shot\n2 = Piercing Shot")
-            starting_skill_num = input()
-            while not (starting_skill_num == "1" or starting_skill_num == "2"):
-                print("Please choose a valid starting skill.")
-                starting_skill_num = input()
+            prompt = "Choose a starting skill:\n1 = Double Shot\n2 = Piercing Shot"
+            valid = ["1", "2"]
+            starting_skill_num = validate_input(prompt, valid, "Please choose a valid starting skill.")
 
             match starting_skill_num:
                 case "1":
@@ -80,20 +74,19 @@ def create_character():
 
         case _: #Warrior
             char_type = "Warrior"
-            print(divider)
-            print("Choose a starting skill:\n1 = Devastating Strike\n2 = Cleave\n3 = Fury of Blows")
-            starting_skill_num = input()
-            while not (starting_skill_num == "1" or starting_skill_num == "2" or starting_skill_num == "3"):
-                print("Please choose a valid starting skill.")
-                starting_skill_num = input()
+            prompt = "Choose a starting skill:\n1 = Devastating Strike\n2 = Cleave\n3 = Fury of Blows\n4 = Draining Strike"
+            valid = ["1", "2", "3", "4"]
+            starting_skill_num = validate_input(prompt, valid, "Please choose a valid starting skill.")
             
             match starting_skill_num:
                 case "1":
                     starting_skill = "Devastating Strike"
                 case "2":
                     starting_skill = "Cleave"
-                case _:
+                case "3":
                     starting_skill = "Fury of Blows"
+                case _:
+                    starting_skill = "Draining Strike"
 
             char = Player(name, random_stats, style="Warrior", skills=[starting_skill])
     

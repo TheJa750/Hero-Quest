@@ -25,6 +25,7 @@ class Character():
         self.magic_resist = 0
         self.phys_damage = 5 * self.strength
         self.mage_damage = 0
+        self.lifesteal = 0  # Default lifesteal value
 
         # Creating equipment slots:
         starting_gear_head = Equipment("None", equipment_slot_head, 0, 0, 0, 0)
@@ -46,20 +47,26 @@ class Character():
     def take_damage(self, damage, dmg_type):
         # Pretty self explanatory, takes damage based on damage type and armor
         #print(f"Incoming damage: {damage}. Armor: {self.armor}, MR: {self.magic_resist}")
+        actual_dmg = 0
         if dmg_type == "physical":
-            self.health = self.health - max(1, damage - (self.armor * 5))
-            print(f"{self.name} takes {max(1, damage - (5 * self.armor))} physical damage.")
+            actual_dmg = max(1, damage - (self.armor * 5))
+            self.health = self.health - actual_dmg
+            print(f"{self.name} takes {actual_dmg} physical damage.")
         elif dmg_type == "magical":
-            self.health = self.health - max(1, damage - (self.magic_resist * 5))
-            print(f"{self.name} takes {max(1, damage - (self.magic_resist * 5))} magical damage.")
+            actual_dmg = max(1, damage - (self.magic_resist * 5))
+            self.health = self.health - actual_dmg
+            print(f"{self.name} takes {actual_dmg} magical damage.")
         elif dmg_type == "true":
-            self.health = self.health - damage
-            print(f"{self.name} takes {damage} true damage.")
+            actual_dmg = damage  # True damage ignores armor and magic resist
+            self.health = self.health - actual_dmg
+            print(f"{self.name} takes {actual_dmg} true damage.")
         
         if self.health > 0:
             print(f"{self.name} has {self.health} health remaining.")
         else:
             print(f"{self.name} has died.")
+        
+        return actual_dmg
 
     def __str__(self):
         # For debugging character creation
@@ -74,38 +81,35 @@ Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.arm
         mr = equipment.mr
         p_dmg = equipment.phys_damage
         m_dmg = equipment.mage_damage
+        ls = equipment.lifesteal
 
         print(f"Equipping {equipment.name} to {self.name}")
 
         if slot == "head":
             old_equip = self.head_armor
             self.head_armor = equipment
-            self.armor += armor
-            self.magic_resist += mr
-            self.phys_damage += p_dmg
-            self.mage_damage += m_dmg
         elif slot == "body":
             old_equip = self.body_armor
             self.body_armor = equipment
-            self.armor += armor
-            self.magic_resist += mr
-            self.phys_damage += p_dmg
-            self.mage_damage += m_dmg
         elif slot == "weapon":
             old_equip = self.weapon
             self.weapon = equipment
-            self.armor += armor
-            self.magic_resist += mr
-            self.phys_damage += p_dmg
-            self.mage_damage += m_dmg
         else:
             raise ValueError("Invalid equipment")
+        
+        self.armor += armor
+        self.magic_resist += mr
+        self.phys_damage += p_dmg
+        self.mage_damage += m_dmg
+        self.lifesteal += ls
         
         if not (old_equip.name == "None" or old_equip.name == "Plain Clothes" or old_equip.name == "Fist"):
             self.armor -= old_equip.armor
             self.magic_resist -= old_equip.mr
             self.phys_damage -= old_equip.phys_damage
             self.mage_damage -= old_equip.mage_damage
+            if hasattr(old_equip, "lifesteal"):
+                self.lifesteal -= old_equip.lifesteal
             temp = Item(old_equip)
             self.invent.append(temp)
         
@@ -119,7 +123,11 @@ Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.arm
         # Calculating melee damage
         dmg = max(1, self.phys_damage)
         print(f"{self.name} strikes {target.name}.")
-        target.take_damage(dmg, "physical")
+        actual_dmg = target.take_damage(dmg, "physical")
+        if hasattr(self, "lifesteal") and self.lifesteal > 0:
+            heal_amount = round(self.lifesteal/100 * actual_dmg)
+            print(f"{self.name} heals for {heal_amount} health.")
+            self.health = min(self.max_health, self.health + heal_amount)
 
     def get_class_type(self):
         return type(self).__name__

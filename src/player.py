@@ -172,20 +172,28 @@ class Player(Character):
         #Targets up to 3 enemies target1 is main target and gets full damage, target2/3 get 75% damage
         dmg = max(1, self.phys_damage)
         print(f"{self.name} cleaves {target1.name}.")
-        target1.take_damage(dmg, "physical")
+        actual_dmg1 = target1.take_damage(dmg, "physical")
+        actual_dmg2 = 0
+        actual_dmg3 = 0
 
         if target2 and target3:
             print(f"The sweep hits {target2.name} and {target3.name}.")
-            target2.take_damage(round(0.75 * dmg), "physical")
-            target3.take_damage(round(0.75 * dmg), "physical")
+            actual_dmg2 = target2.take_damage(round(0.75 * dmg), "physical")
+            actual_dmg3 = target3.take_damage(round(0.75 * dmg), "physical")
         elif target2:
             print(f"The sweep hits {target2.name}.")
-            target2.take_damage(round(0.75 * dmg), "physical")
+            actual_dmg2 = target2.take_damage(round(0.75 * dmg), "physical")
         elif target3:
             print(f"The sweep hits {target3.name}.")
-            target3.take_damage(round(0.75 * dmg), "physical")
+            actual_dmg3 = target3.take_damage(round(0.75 * dmg), "physical")
         else:
             print("No other targets in range.")
+
+        if hasattr(self, "lifesteal") and self.lifesteal > 0:
+            actual_dmg = actual_dmg1 + actual_dmg2 + actual_dmg3
+            heal_amount = round(self.lifesteal/100 * actual_dmg)
+            print(f"{self.name} heals for {heal_amount} health.")
+            self.health = min(self.max_health, self.health + heal_amount)
 
         return True
 
@@ -194,6 +202,10 @@ class Player(Character):
         dmg = max(1, self.phys_damage)
         print(f"{self.name} lands a powerful blow on {target.name}.")
         target.take_damage(dmg, "true")
+        if hasattr(self, "lifesteal") and self.lifesteal > 0:
+            heal_amount = round(self.lifesteal/100 * dmg)
+            print(f"{self.name} heals for {heal_amount} health.")
+            self.health = min(self.max_health, self.health + heal_amount)
 
         return True
 
@@ -201,12 +213,17 @@ class Player(Character):
         #Attacks a random number of times (2-5 inclusive), each for 50% damage
         num_attacks = random.randint(2,5)
         dmg = max(1, 0.5 * self.phys_damage)
+        actual_dmg = 0
         print(f"{self.name} quickly attacks {target.name} {num_attacks} times.")
         for i in range(0, num_attacks):
-            target.take_damage(round(dmg), "physical")
+            actual_dmg += target.take_damage(round(dmg), "physical")
+        if hasattr(self, "lifesteal") and self.lifesteal > 0:
+            heal_amount = round(self.lifesteal/100 * actual_dmg)
+            print(f"{self.name} heals for {heal_amount} health.")
+            self.health = min(self.max_health, self.health + heal_amount)
         return True
 
-    def basic_shot(self, target,dmg_mod = 1.0, dmg_type = "physical"):
+    def basic_shot(self, target, dmg_mod = 1.0, dmg_type = "physical"):
         for item in self.invent:    
             if item.name == "ARROWS":
                 arrows = item #type: Item
@@ -214,7 +231,11 @@ class Player(Character):
         if arrows.quantity > 0: #type: ignore
             print(f"{self.name} shoots {target.name}.")
             arrows.quantity -= 1 #type: ignore
-            target.take_damage(round(dmg_mod * self.phys_damage), dmg_type)
+            actual_dmg = target.take_damage(round(dmg_mod * self.phys_damage), dmg_type)
+            if hasattr(self, "lifesteal") and self.lifesteal > 0:
+                heal_amount = round(self.lifesteal/100 * actual_dmg)
+                print(f"{self.name} heals for {heal_amount} health.")
+                self.health = min(self.max_health, self.health + heal_amount)
             print(f"Arrows remaining: {arrows.quantity}.") #type: ignore
         else:
             print("Not enough arrows!")
@@ -311,5 +332,16 @@ class Player(Character):
             print(f"{self.name} has insufficient mana to cast Heal.")
             return False
         
+    def draining_strike(self, target):
+        #Drains health from target and heals self
+        dmg = max(1, self.phys_damage)
+        print(f"{self.name} drains life from {target.name}.")
+        drain_dmg = target.take_damage(dmg, "physical")
+        self.health = min(self.max_health, self.health + drain_dmg)
+        print(f"{self.name} heals for {dmg} health.")
+        return True
+    
     def death(self):
         print("Thank you for playing Hero Quest.")
+
+    

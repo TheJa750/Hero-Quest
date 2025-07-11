@@ -7,6 +7,7 @@ from Enemy import Enemy
 from shop import Shop
 from item import Item
 from saving import list_saves_summary, save_game, delete_save
+from dev_menu import dev_menu
 
 def target_selection_menu(enemies: list):
     i = 1
@@ -18,6 +19,7 @@ def target_selection_menu(enemies: list):
         i += 1
     prompt = "\n".join(strings)
     target = validate_input(prompt, valid_inputs)
+    print(divider)
 
     return target
 
@@ -97,6 +99,7 @@ def spells_menu(player: Player,enemies: list):
 
 def main_combat_menu(player: Player, enemies: list):
     while True:
+        print(f"HP: {player.health}/{player.max_health} | Mana: {player.mana}/{player.max_mana}")
         prompt = ("1 = Basic Attack\n2 = Skills\n3 = Spells\n4 = Flee")
         valid_inputs = ["1", "2", "3", "4"]
         choice = validate_input(prompt, valid_inputs)
@@ -128,7 +131,7 @@ def main_combat_menu(player: Player, enemies: list):
 def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
     while True:
         prompt = ("0 = Exit\n1 = Explore Dungeon\n2 = Inventory\n3 = Shop\n4 = Status\n5 = Manage Saved Games")
-        valid_inputs = ["0", "1", "2", "3", "4", "5", "69", "420"]
+        valid_inputs = ["0", "1", "2", "3", "4", "5", "dev_menu"]
         choice = validate_input(prompt, valid_inputs)
 
         match choice:
@@ -137,9 +140,6 @@ def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
             case "1":
                 return dungeon_menu(player, current_dungeon, current_shop)
             case "2":
-                print(divider)
-                print(f"Inventory: {player.invent}")
-                
                 prompt = ["Choose item:", "0 = Back"]
                 valid_inputs = ["0"]
                 
@@ -163,19 +163,13 @@ def main_menu(player: Player, current_dungeon: Dungeon, current_shop):
                 return True
             case "5":
                 return main_save_menu(player, current_shop, current_dungeon)
-            case "69":
-                current_shop.restock_items()
-                print("Restocking shop items...")
-                return True
-            case "420":
-                current_dungeon.floors.clear()  # Clear all floors in the dungeon
-                print("Clearing dungeon floors...")
-                return True
-
+            case "dev_menu":
+                return dev_menu(player, current_dungeon, current_shop)
+            
 def shop_menu(player: Player, shop: Shop):
     print("Welcome to the Fantasy Shop!")
     print("Can I interest you in any of our fine wares?")
-    print(f"Debug: markup is {shop.markup}")
+    #print(f"Debug: markup is {shop.markup}")
     while True:
 
         prompt = ["0 = Back", "1 = Sell"]
@@ -196,6 +190,7 @@ def shop_menu(player: Player, shop: Shop):
                 shop.buy_item(choice-2)
     
 def use_item_menu(player:Player, item: Item):
+    #print(divider)
     if item.is_equip:
         slot = item.item.slot
         match slot:
@@ -232,23 +227,30 @@ def use_item_menu(player:Player, item: Item):
                 spell_list = spells.copy()
                 if item.quantity > 0:
                     if user_yes_no_check(item, "use"):
-                        item.quantity -= 1
                         for spell in player.spells:
-                            spell_list.remove(spell) 
+                            spell_list.remove(spell)
+                        if len(spell_list) == 0:
+                            print("No more spells to learn.")
+                            return 
                         new_spell = random.choice(spell_list)
                         player.learn_spell(new_spell)
+                        item.quantity -= 1
             case "SKILLBOOK":
                 skill_list = skills.copy()
                 if item.quantity > 0:
                     if user_yes_no_check(item, "use"):
-                        item.quantity -= 1
+                        
                         for skill in player.skills:
                             skill_list.remove(skill)
                         if player.style != "Archer":
                             skill_list.remove("Double Shot")
                             skill_list.remove("Piercing Shot")
+                        if len(skill_list) == 0:
+                            print("No more skills to learn.")
+                            return 
                         new_skill = random.choice(skill_list)
                         player.learn_skill(new_skill)
+                        item.quantity -= 1
             case "COINS":
                 print("Lovely money!")
             case _:
@@ -273,6 +275,7 @@ def user_yes_no_check(item, function: str):
 def dungeon_menu(player: Player, dungeon: Dungeon, shop: Shop):
     print(divider)
     print(dungeon)
+    
 
     keep_exploring = True
 
@@ -287,6 +290,7 @@ def dungeon_menu(player: Player, dungeon: Dungeon, shop: Shop):
     
         print(divider)
         print(repr(room))
+        print(divider)
         action_code = battle(player, room.enemies)
 
         match action_code:
@@ -319,7 +323,7 @@ def battle(player: Player, enemies: list[Enemy]):
 
 
         action_code = main_combat_menu(player, enemies)
-        print(divider)
+        #print(divider)
 
         if action_code != 0:
             print(f"{player.name} has fled succesfully.")
@@ -337,9 +341,9 @@ def battle(player: Player, enemies: list[Enemy]):
 
         if len(enemies) > 0:
             for enemy in enemies:
-                time.sleep(0.25)
-                enemy.melee_strike(player)
+                time.sleep(0.5)
                 print(divider)
+                enemy.melee_strike(player)
                 if player.health <= 0:
                     return 2
 
@@ -433,3 +437,4 @@ def main_save_menu(player: Player, shop: Shop, dungeon: Dungeon):
                     return True
                     
 
+        

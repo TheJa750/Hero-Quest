@@ -2,13 +2,14 @@ import random
 from Constants import *
 
 class Equipment():
-    def __init__(self, name, slot, armor, mr, melee_damage, mage_dmg):
+    def __init__(self, name, slot, armor, mr, melee_damage, mage_dmg, lifesteal=0):
         self.name = name
         self.slot = slot
         self.armor = armor
         self.mr = mr
         self.phys_damage = melee_damage
         self.mage_damage = mage_dmg
+        self.lifesteal = lifesteal
     
     def __str__(self) -> str:
         return f"{self.name}: Slot: {self.slot} Armor: {self.armor} Magic Resist: {self.mr} Physical Damage: {self.phys_damage} Magical Damage: {self.mage_damage}"
@@ -20,6 +21,8 @@ class Equipment():
         print(f"Magic Resist: {self.mr} vs. {other.mr}")
         print(f"Phyiscal Damage: {self.phys_damage} vs. {other.phys_damage}")
         print(f"Magical Damage: {self.mage_damage} vs. {other.mage_damage}")
+        if hasattr(other, "lifesteal") and hasattr(self, "lifesteal"):
+            print(f"Lifesteal: {self.lifesteal} vs. {other.lifesteal}")
 
     def __repr__(self) -> str:
         return f"S:{self.slot}, A:{self.armor}, R:{self.mr}, P:{self.phys_damage}, M:{self.mage_damage}"
@@ -89,4 +92,13 @@ def create_new_equipment(player):
     else:
         name = f"{prename} {body} of {postname}"
 
-    return Equipment(name, slot, armor, mr, phys, mage)
+    lifesteal = 0
+
+    if prename == "Draining":
+        lifesteal += random.randint(5, 10)
+    if postname == "Draining":
+        lifesteal += random.randint(5, 10)
+    if postname == prename: # Either both are draining (double lifesteal) or both not draining (0*2=0)
+        lifesteal *= 2
+
+    return Equipment(name, slot, armor, mr, phys, mage, lifesteal)

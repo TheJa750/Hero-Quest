@@ -103,7 +103,7 @@ class Shop():
         item = self.items[index]
         price = self.prices[index]
 
-        print(f"Debug: {item.name} has value {item.value} and price {price} with markup {self.markup}")
+        #print(f"Debug: {item.name} has value {item.value} and price {price} with markup {self.markup}")
 
         if item.is_equip:
             slot = item.item.slot
