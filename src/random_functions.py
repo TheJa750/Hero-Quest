@@ -3,8 +3,9 @@ from Constants import *
 from player import Player
 from Enemy import Enemy
 from dungeon import Dungeon
-from shop import Shop
+from shop import Shop, user_yes_no_check
 from characters import get_starting_stats
+from item import Item
 
 def create_dungeon(player: Player):
     type = random.choice(dungeon_types)
@@ -103,3 +104,84 @@ def check_load(player, shop, dungeon):
         print("Error: Dungeon data is invalid.")
         return False
     return True
+
+def use_item(player: Player, item: Item):
+    match item.name:
+        case "HEALTH POTION":
+            if item.quantity > 0:
+                if user_yes_no_check(item.name, "use"):
+                    item.quantity -= 1
+                    player.health = player.max_health
+                    print("Drinking health potion...")
+                    print(f"Health recovered! {player.name} now has {player.health} health.")
+        case "MANA POTION":
+            if item.quantity > 0:
+                if user_yes_no_check(item, "use"):
+                    item.quantity -= 1
+                    player.mana = player.max_mana
+                    print("Drinking mana potion...")
+                    print(f"Mana recovered! {player.name} now has {player.mana} mana.")
+        case "SPELLBOOK":
+            spell_list = spells.copy()
+            if item.quantity > 0:
+                if user_yes_no_check(item, "use"):
+                    for spell in player.spells:
+                        spell_list.remove(spell)
+                    if len(spell_list) == 0:
+                        print("No more spells to learn.")
+                        return 
+                    new_spell = random.choice(spell_list)
+                    player.learn_spell(new_spell)
+                    item.quantity -= 1
+        case "SKILLBOOK":
+            skill_list = skills.copy()
+            if item.quantity > 0:
+                if user_yes_no_check(item, "use"):
+                    
+                    for skill in player.skills:
+                        skill_list.remove(skill)
+                    if player.style != "Archer":
+                        skill_list.remove("Double Shot")
+                        skill_list.remove("Piercing Shot")
+                    if len(skill_list) == 0:
+                        print("No more skills to learn.")
+                        return 
+                    new_skill = random.choice(skill_list)
+                    player.learn_skill(new_skill)
+                    item.quantity -= 1
+        case "COINS":
+            print("Lovely money!")
+        case _:
+            if "FRUIT OF " in item.name:
+                if item.quantity > 0:
+                    if user_yes_no_check(item, "use"):
+                        stat = item.name[len("FRUIT OF "):]
+                        value = random.randint(1, 5)
+
+                        match stat:
+                            case "STRENGTH":
+                                player.strength += value
+                            case "AGILITY":
+                                player.agility += value
+                            case "CONSTITUTION":
+                                player.constitution += value
+                            case "WISDOM":
+                                player.wisdom += value
+                            case "LUCK":
+                                player.luck += value
+                            case "ASCENSION":
+                                player.growth += random.randint(1, 2)
+                            case "BLOODTHIRST":
+                                player.lifesteal += 2 * value
+                        item.quantity -= 1
+            else:
+                print("I wonder what I can do with this... Maybe I can sell it?")
+
+    exists, index = player.check_for_item(item.name)
+    
+    if exists and player.invent[index].quantity == 0:
+        player.invent.remove(item)
+
+    return
+
+ 

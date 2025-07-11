@@ -17,13 +17,11 @@ class Character():
         self.level = 1
 
         # Calculating Health/Mana based on stats:
-        self.max_health = 100 * self.constitution
+        self.refresh_stats()
         self.health = self.max_health
-        self.max_mana = 25 * self.wisdom
         self.mana = self.max_mana
         self.armor = 0
         self.magic_resist = 0
-        self.phys_damage = 5 * self.strength
         self.mage_damage = 0
         self.lifesteal = 0  # Default lifesteal value
 
@@ -131,6 +129,11 @@ Body Slot: {self.body_armor.name}, Weapon: {self.weapon.name},\nArmor: {self.arm
 
     def get_class_type(self):
         return type(self).__name__
+
+    def refresh_stats(self):
+        self.max_health = hp_per_con * self.constitution
+        self.max_mana = mp_per_wis * self.wisdom
+        self.phys_damage = dmg_per_str * self.strength
 
 def get_starting_stats(points=45):
     stats = ["str", "agi", "con", "wis", "luck"]

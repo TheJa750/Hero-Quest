@@ -8,6 +8,7 @@ from shop import Shop
 from item import Item
 from saving import list_saves_summary, save_game, delete_save
 from dev_menu import dev_menu
+from random_functions import use_item
 
 def target_selection_menu(enemies: list):
     i = 1
@@ -208,58 +209,7 @@ def use_item_menu(player:Player, item: Item):
             return
         
     else:
-        match item.name:
-            case "HEALTH POTION":
-                if item.quantity > 0:
-                    if user_yes_no_check(item.name, "use"):
-                        item.quantity -= 1
-                        player.health = player.max_health
-                        print("Drinking health potion...")
-                        print(f"Health recovered! {player.name} now has {player.health} health.")
-            case "MANA POTION":
-                if item.quantity > 0:
-                    if user_yes_no_check(item, "use"):
-                        item.quantity -= 1
-                        player.mana = player.max_mana
-                        print("Drinking mana potion...")
-                        print(f"Mana recovered! {player.name} now has {player.mana} mana.")
-            case "SPELLBOOK":
-                spell_list = spells.copy()
-                if item.quantity > 0:
-                    if user_yes_no_check(item, "use"):
-                        for spell in player.spells:
-                            spell_list.remove(spell)
-                        if len(spell_list) == 0:
-                            print("No more spells to learn.")
-                            return 
-                        new_spell = random.choice(spell_list)
-                        player.learn_spell(new_spell)
-                        item.quantity -= 1
-            case "SKILLBOOK":
-                skill_list = skills.copy()
-                if item.quantity > 0:
-                    if user_yes_no_check(item, "use"):
-                        
-                        for skill in player.skills:
-                            skill_list.remove(skill)
-                        if player.style != "Archer":
-                            skill_list.remove("Double Shot")
-                            skill_list.remove("Piercing Shot")
-                        if len(skill_list) == 0:
-                            print("No more skills to learn.")
-                            return 
-                        new_skill = random.choice(skill_list)
-                        player.learn_skill(new_skill)
-                        item.quantity -= 1
-            case "COINS":
-                print("Lovely money!")
-            case _:
-                print("I wonder what I can do with this... Maybe I can sell it?")
-
-        exists, index = player.check_for_item(item.name)
-        
-        if exists and player.invent[index].quantity == 0:
-            player.invent.remove(item)
+        use_item(player, item)
         
         return
         
@@ -295,23 +245,25 @@ def dungeon_menu(player: Player, dungeon: Dungeon, shop: Shop):
 
         match action_code:
             case 0:
-                pass
+                pass #Room has been cleared
             case 1: #Flee, return room to dungeon -> floor 0 -> room 0 then return to main menu with True (continue playing)
                 dungeon.floors[0].rooms.insert(0, room.remove_dead_enemies())
                 return True
             case 2: #player has died return to main menu with False (stop playing)
                 player.death()
                 return False
+            
+        room = dungeon.next_room() #type: Room | str
+
+        if isinstance(room, str): #Only type str when dungeon complete, returns to main menu to begin new loop
+            print(divider)
+            print(room)
+            shop.restock_items()
+            return True
+        else:
+            dungeon.floors[0].rooms.insert(0, room)
         
         keep_exploring = user_yes_no_check(dungeon.name, "explore")
-        if not keep_exploring:
-            room = dungeon.next_room() #type: Room | str
-
-            if isinstance(room, str): #Only type str when dungeon complete, returns to main menu to begin new loop
-                print(divider)
-                print(room)
-                shop.restock_items()
-                return True
 
     return True
             

@@ -118,6 +118,11 @@ postname_modifiers = [
     "Draining"
 ]
 
+hp_per_con = 100
+mp_per_wis = 15
+dmg_per_str = 5
+base_points_per_level = 3
+
 def validate_input(prompt, valid_inputs, reprompt = "Please choose a valid option"):
     print(divider)
     print(prompt)

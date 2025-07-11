@@ -50,11 +50,11 @@ class Enemy(Character):
         item_list = [
             "HEALTH POTION", "MANA POTION",
             "SPELLBOOK", "SKILLBOOK", "DUSTY TOME",
-            "CLOTH", "COINS", "RING", "NECKLACE" 
+            "CLOTH", "COINS", "RING", "NECKLACE", "FRUIT"
         ]
-        weights = [5, 5, 2, 2, 25, 25, 50, 1, 1]
+        weights = [12, 12, 6, 6, 35, 35, 80, 3, 3, 1]
 
-        num_rolls = random.randint(1, luck_mod)
+        num_rolls = random.randint(1, luck_mod + self.growth)
 
         equip_roll = random.randint(0, 300)
 
@@ -73,6 +73,12 @@ class Enemy(Character):
                         quantity = random.randint(2, 2 + modifier)
                     case _:
                         quantity = 1
+                name = item
+                if item == "FRUIT":
+                    stats = ["STRENGTH", "AGILITY", "CONSTITUTION", "WISDOM", "LUCK", "ASCENSION", "BLOODTHIRST"]
+                    stat_weights = [100, 100, 100, 100, 15, 1, 5]
+                    stat = random.choices(stats, stat_weights)
+                    name = item + " OF " + stat[0]
                 exists = False
                 for obj in loot:
                     if obj.name == item:

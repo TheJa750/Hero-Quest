@@ -15,6 +15,7 @@ class Player(Character):
     def __init__(self, name, stats, style, skills = [], spells = []):
         super().__init__(name, stats)
         self.style = style
+        self.growth = base_points_per_level
 
         # Creating list of skills & spells:
         self.skills = []
@@ -97,17 +98,15 @@ class Player(Character):
         print(divider)
         
         if self.level % 5 == 0:
-            self.add_stats(6) #double points every 5th level
+            self.add_stats(2 * self.growth) #double points every 5th level
         else:
-            self.add_stats(3)
+            self.add_stats(self.growth)
 
         #Refill health/mana and update physical damage
-        self.max_health = 100 * self.constitution
+        self.refresh_stats()
         self.health = self.max_health
-        self.max_mana = 25 * self.wisdom
         self.mana = self.max_mana
-        self.phys_damage = ((5 * self.strength) + self.head_armor.phys_damage
-                            + self.body_armor.phys_damage + self.weapon.phys_damage)
+        self.phys_damage += (self.head_armor.phys_damage + self.body_armor.phys_damage + self.weapon.phys_damage)
 
     def add_stats(self, new_points):
         print(f"{new_points} stat point(s) available.")
@@ -210,8 +209,9 @@ class Player(Character):
         return True
 
     def fury_of_blows(self, target):
-        #Attacks a random number of times (2-5 inclusive), each for 50% damage
-        num_attacks = random.randint(2,5)
+        #Attacks a random number of times (based on agility), each for 50% damage
+        max_attacks = self.agility // 2
+        num_attacks = random.randint(2, max_attacks)
         dmg = max(1, 0.5 * self.phys_damage)
         actual_dmg = 0
         print(f"{self.name} quickly attacks {target.name} {num_attacks} times.")
@@ -337,8 +337,17 @@ class Player(Character):
         dmg = max(1, self.phys_damage)
         print(f"{self.name} drains life from {target.name}.")
         drain_dmg = target.take_damage(dmg, "physical")
-        self.health = min(self.max_health, self.health + drain_dmg)
-        print(f"{self.name} heals for {dmg} health.")
+        #print(f"DEBUG: drain damage: {drain_dmg}")
+        
+        heal_factor = 50
+        if hasattr(self, "lifesteal") and self.lifesteal > 0:
+            heal_factor += self.lifesteal
+        #print(f"DEBUG: Healing factor: {heal_factor}")
+        heal_amount = round((heal_factor/100) * drain_dmg)
+        #print(f"DEBUG: Heal amount: {heal_amount}")
+
+        self.health = min(self.max_health, self.health + heal_amount)
+        print(f"{self.name} heals for {heal_amount} health.")
         return True
     
     def death(self):
